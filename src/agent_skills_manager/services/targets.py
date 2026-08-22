@@ -83,39 +83,79 @@ def preview_symlink_target(
 ) -> PreviewResult:
     """Preview what will happen if we symlink this target to the hub."""
     result = PreviewResult(target=target, existing_skills=[])
+    hub_path = hub_dir.resolve()
 
-    if target.state == "symlink_ok" and target.resolved_path == hub_dir.resolve():
+    if target.state == "symlink_ok" and target.resolved_path == hub_path:
         result.message = "This target is already symlinked to the central hub."
+        result.operations = [f"No action needed. {target.path} -> {hub_dir}"]
         return result
 
     if target.state == "missing":
         result.can_symlink = True
         result.message = "Target does not exist; it will be created as a symlink to the hub."
+        result.operations = [
+            f"Ensure central hub exists: {hub_dir}",
+            f"Create symlink: {target.path} -> {hub_dir}",
+        ]
         return result
 
     if target.state == "symlink_broken":
         result.can_symlink = False
         result.message = "Target is a broken symlink. Remove it before creating a new symlink."
+        result.operations = [f"Remove broken symlink: {target.path}"]
+        return result
+
+    if target.state == "file":
+        result.can_symlink = False
+        result.message = f"Target path is a file, not a directory: {target.path}"
+        result.operations = [f"Remove or move the file: {target.path}"]
         return result
 
     if target.state == "directory":
         result.existing_skills = list_skills(target.path, source=target.name)
         if not result.existing_skills:
+            result.can_symlink = True
             result.message = "Target directory is empty; it will be replaced with a symlink to the hub."
+            result.operations = [
+                f"Ensure central hub exists: {hub_dir}",
+                f"Remove empty directory: {target.path}",
+                f"Create symlink: {target.path} -> {hub_dir}",
+            ]
             return result
 
         if not move_existing:
             result.can_symlink = False
             result.message = "Target contains skills. Enable 'move existing' to migrate them first."
+            result.operations = [f"Move {len(result.existing_skills)} skill(s) from {target.path} to {hub_dir}, then create symlink."]
             return result
 
         move_plan = plan_move_to_hub(target.path, hub_dir, conflict_strategy=conflict_strategy)
+        operations: list[str] = []
+        for op in move_plan.operations:
+            if op.action == "skip":
+                operations.append(f"Skip '{op.source.name}' (already exists in hub)")
+            elif op.action == "rename":
+                operations.append(
+                    f"Move '{op.source.name}' -> '{op.destination.name}' in {hub_dir} (renamed to avoid conflict)"
+                )
+            elif op.action == "merge":
+                operations.append(
+                    f"Merge '{op.source.name}' into existing '{op.destination.name}' in {hub_dir}"
+                )
+            else:
+                operations.append(f"Move '{op.source.name}' -> {op.destination}")
+
         conflicts = [
             f"'{op.source.name}' will be renamed to '{op.destination.name}'"
             for op in move_plan.operations
             if op.action == "rename"
         ]
         result.conflicts = conflicts
+        operations.extend([
+            f"Remove directory: {target.path}",
+            f"Create symlink: {target.path} -> {hub_dir}",
+        ])
+        result.operations = operations
         result.message = (
             f"Found {len(result.existing_skills)} existing skill(s). "
             "They will be moved into the central hub before the symlink is created."

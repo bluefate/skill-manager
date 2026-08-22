@@ -69,6 +69,7 @@ class PreviewResult(BaseModel):
     target: AgentTarget
     existing_skills: list[Skill]
     conflicts: list[str] = Field(default_factory=list)
+    operations: list[str] = Field(default_factory=list)
     can_symlink: bool = True
     message: str = ""
 

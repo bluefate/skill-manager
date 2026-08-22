@@ -265,9 +265,12 @@ async function previewTarget(id) {
         ).join('');
         const conflicts = preview.conflicts.map(c => `<li class="conflict">${escapeHtml(c)}</li>`).join('');
 
+        const operations = preview.operations.map(o => `<li><code>${escapeHtml(o)}</code></li>`).join('');
+
         const body = document.createElement('div');
         body.innerHTML = `
             <p>${escapeHtml(preview.message)}</p>
+            ${operations ? `<h4>Execution plan</h4><ul class="preview-list">${operations}</ul>` : ''}
             ${listItems ? `<h4>Existing skills (${preview.existing_skills.length})</h4><ul class="preview-list">${listItems}</ul>` : ''}
             ${conflicts ? `<h4>Conflicts</h4><ul class="preview-list">${conflicts}</ul>` : ''}
             <div class="checkbox-row">
