@@ -40,6 +40,10 @@ body {
     font-size: 1.5rem;
 }
 
+.app-logo {
+    display: block;
+}
+
 .version {
     color: var(--text-muted);
     font-size: 0.875rem;
