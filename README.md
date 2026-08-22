@@ -17,7 +17,7 @@ This tool keeps all your skills in `~/.agents/skills/` and lets you safely previ
 
 - **Central Skills Hub** — Manage everything from `~/.agents/skills/`.
 - **Agent Target Management** — Built-in targets for Cursor, Claude, Codex, and OpenCode; add custom targets dynamically.
-- **Safe Symlink Workflow** — Preview target directories, move existing skills into the hub, then create or remove symlinks with clear conflict handling.
+- **Safe Symlink Workflow** — Preview target directories, move existing skills into the hub, then create or remove symlinks with clear conflict handling. Undo a symlink later to restore the original directory.
 - **Project Skill Reviewer** — Scan any project for `.agents/skills/`, `.cursor/skills/`, `.claude/skills/`, `.codex/skills/`, and `.opencode/skills/`; review and import skills into the central hub.
 - **Web Admin UI** — Fully self-contained dashboard; no manual CLI steps needed after launching the server.
 

@@ -236,6 +236,7 @@ function renderTargets() {
             <div class="actions">
                 ${t.state === 'directory' ? `<button class="btn small primary" data-preview="${escapeHtml(t.id)}">Preview & Symlink</button>` : ''}
                 ${t.state === 'symlink_ok' ? `<button class="btn small danger" data-remove="${escapeHtml(t.id)}">Remove Symlink</button>` : ''}
+                ${t.can_undo ? `<button class="btn small warning" data-undo="${escapeHtml(t.id)}">Undo Symlink</button>` : ''}
                 ${!isDefaultTarget(t) ? `<button class="btn small danger" data-delete-target="${escapeHtml(t.id)}">Delete Target</button>` : ''}
             </div>
         </div>
@@ -246,6 +247,9 @@ function renderTargets() {
     });
     qsa('[data-remove]', list).forEach(btn => {
         btn.addEventListener('click', () => removeSymlink(btn.dataset.remove));
+    });
+    qsa('[data-undo]', list).forEach(btn => {
+        btn.addEventListener('click', () => undoSymlink(btn.dataset.undo));
     });
     qsa('[data-delete-target]', list).forEach(btn => {
         btn.addEventListener('click', () => deleteTarget(btn.dataset.deleteTarget));
@@ -345,6 +349,22 @@ async function removeSymlink(id) {
             );
         }),
     ]);
+}
+
+async function undoSymlink(id) {
+    const target = state.targets.find(t => t.id === id);
+    if (!target) return;
+    if (!confirm(`Undo symlink for ${target.name}?\n\nThis will restore the original directory and move skills back from the central hub.`)) {
+        return;
+    }
+    const result = await API.post('/api/targets/undo-symlink', { target_id: id });
+    await loadTargets();
+    showToast(
+        result.status === 'ok'
+            ? `${result.message} Restart that agent/editor to use its own directory again.`
+            : result.message,
+        result.status === 'ok' ? 'success' : 'error'
+    );
 }
 
 qs('#btn-add-target').addEventListener('click', () => {

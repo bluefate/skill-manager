@@ -61,6 +61,7 @@ class AgentTarget(BaseModel):
     state: Literal["missing", "directory", "symlink_ok", "symlink_broken", "file"] = "missing"
     resolved_path: Path | None = None
     skills: list[Skill] = Field(default_factory=list)
+    can_undo: bool = False
 
 
 class PreviewResult(BaseModel):
@@ -95,3 +96,19 @@ class ImportRequest(BaseModel):
     source_path: Path
     skill_names: list[str]
     conflict_strategy: Literal["rename", "skip", "overwrite"] = "rename"
+
+
+class SymlinkHistory(BaseModel):
+    """Record of skills moved during a symlink operation so it can be undone."""
+
+    timestamp: str
+    target_id: str
+    target_path: Path
+    hub_path: Path
+    operations: list[MoveOperation]
+
+
+class UndoRequest(BaseModel):
+    """Request to undo a symlink operation."""
+
+    target_id: str

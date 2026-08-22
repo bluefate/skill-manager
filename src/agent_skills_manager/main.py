@@ -21,6 +21,7 @@ from agent_skills_manager.models import (
     RemoveSymlinkRequest,
     Skill,
     SymlinkRequest,
+    UndoRequest,
 )
 from agent_skills_manager.services.projects import scan_project
 from agent_skills_manager.services.skills import (
@@ -36,8 +37,10 @@ from agent_skills_manager.services.targets import (
     find_target_by_id,
     get_default_targets,
     inspect_target,
+    load_symlink_history,
     preview_symlink_target,
     remove_symlink,
+    undo_symlink,
 )
 
 
@@ -70,7 +73,10 @@ def _get_all_targets(settings: Settings) -> list[AgentTarget]:
     custom = _load_custom_targets(settings)
     default_ids = {t.id for t in defaults}
     merged = defaults + [t for t in custom if t.id not in default_ids]
-    return [inspect_target(t, settings.skills_dir) for t in merged]
+    targets = [inspect_target(t, settings.skills_dir) for t in merged]
+    for target in targets:
+        target.can_undo = load_symlink_history(settings.config_dir, target.id) is not None
+    return targets
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -202,6 +208,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             settings.skills_dir,
             move_existing=request.move_existing,
             conflict_strategy=request.conflict_strategy,
+            history_dir=settings.config_dir,
         )
 
     @app.post("/api/targets/remove-symlink")
@@ -211,6 +218,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         if target is None:
             raise HTTPException(status_code=404, detail="Target not found")
         return remove_symlink(target, restore=request.restore)
+
+    @app.post("/api/targets/undo-symlink")
+    async def undo_symlink_target(request: UndoRequest) -> dict[str, str]:
+        targets = _get_all_targets(settings)
+        target = find_target_by_id(targets, request.target_id)
+        if target is None:
+            raise HTTPException(status_code=404, detail="Target not found")
+        return undo_symlink(target, settings.config_dir)
 
     @app.get("/api/projects/scan", response_model=Project)
     async def scan_project_path(path: str = Query(..., description="Project path to scan")) -> Project:

@@ -19,6 +19,7 @@ from agent_skills_manager.services.targets import (
     inspect_target,
     preview_symlink_target,
     remove_symlink,
+    undo_symlink,
 )
 
 
@@ -133,3 +134,25 @@ def test_preview_symlink_target_for_missing(tmp_path: Path) -> None:
     preview = preview_symlink_target(target, tmp_path / "hub")
     assert preview.can_symlink is True
     assert "does not exist" in preview.message
+
+
+def test_undo_symlink_restores_skills(tmp_path: Path) -> None:
+    hub = tmp_path / "hub"
+    target_path = tmp_path / "target" / "skills"
+    history_dir = tmp_path / "history"
+    write_skill_metadata(target_path / "cursor-skill", "Cursor Skill", "", [])
+
+    target = AgentTarget(id=str(target_path), name="Target", path=target_path)
+    target = inspect_target(target, hub)
+
+    result = create_symlink(target, hub, move_existing=True, history_dir=history_dir)
+    assert result["status"] == "ok"
+    assert target_path.is_symlink()
+    assert (hub / "cursor-skill").exists()
+
+    result = undo_symlink(target, history_dir)
+    assert result["status"] == "ok"
+    assert not target_path.is_symlink()
+    assert target_path.is_dir()
+    assert (target_path / "cursor-skill").exists()
+    assert not (hub / "cursor-skill").exists()

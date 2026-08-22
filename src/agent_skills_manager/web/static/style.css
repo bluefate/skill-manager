@@ -184,6 +184,12 @@ body {
     color: #0f172a;
 }
 
+.btn.warning {
+    background: var(--warning);
+    border-color: var(--warning);
+    color: #0f172a;
+}
+
 .btn.small {
     padding: 0.35rem 0.6rem;
     font-size: 0.8rem;

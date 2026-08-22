@@ -2,17 +2,57 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 import os
 import platform
+from datetime import datetime, timezone
 from pathlib import Path
 
 from agent_skills_manager.config import DEFAULT_AGENT_TARGETS
-from agent_skills_manager.models import AgentTarget, PreviewResult, Skill
+from agent_skills_manager.models import (
+    AgentTarget,
+    MoveOperation,
+    MovePlan,
+    PreviewResult,
+    Skill,
+    SymlinkHistory,
+)
 from agent_skills_manager.services.skills import list_skills, plan_move_to_hub
 
 
 def _target_id_from_path(path: Path) -> str:
     return str(path.expanduser().resolve())
+
+
+def _history_path(history_dir: Path, target_id: str) -> Path:
+    digest = hashlib.md5(target_id.encode("utf-8")).hexdigest()
+    return history_dir / f"symlink-history-{digest}.json"
+
+
+def save_symlink_history(history_dir: Path, history: SymlinkHistory) -> None:
+    """Persist a symlink history record so the operation can be undone later."""
+    history_dir.mkdir(parents=True, exist_ok=True)
+    path = _history_path(history_dir, history.target_id)
+    path.write_text(history.model_dump_json(indent=2), encoding="utf-8")
+
+
+def load_symlink_history(history_dir: Path, target_id: str) -> SymlinkHistory | None:
+    """Load a previously saved symlink history record."""
+    path = _history_path(history_dir, target_id)
+    if not path.exists():
+        return None
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return SymlinkHistory(**data)
+    except (json.JSONDecodeError, TypeError):
+        return None
+
+
+def delete_symlink_history(history_dir: Path, target_id: str) -> None:
+    path = _history_path(history_dir, target_id)
+    if path.exists():
+        path.unlink()
 
 
 def get_default_targets() -> list[AgentTarget]:
@@ -174,8 +214,11 @@ def create_symlink(
     hub_dir: Path,
     move_existing: bool = True,
     conflict_strategy: str = "rename",
+    history_dir: Path | None = None,
 ) -> dict[str, str]:
     """Create a symlink from target.path to hub_dir, optionally moving existing skills."""
+    from agent_skills_manager.services.skills import execute_move_plan
+
     hub_dir.mkdir(parents=True, exist_ok=True)
 
     if target.state == "symlink_ok" and target.resolved_path == hub_dir.resolve():
@@ -187,14 +230,13 @@ def create_symlink(
             "message": f"Target path is a file, not a directory: {target.path}",
         }
 
+    move_plan: MovePlan | None = None
     if target.state == "directory" and move_existing:
         existing_skills = list_skills(target.path, source=target.name)
         if existing_skills:
             move_plan = plan_move_to_hub(
                 target.path, hub_dir, conflict_strategy=conflict_strategy
             )
-            from agent_skills_manager.services.skills import execute_move_plan
-
             execute_move_plan(move_plan)
 
         # After moving skills, the target directory must be empty (or non-existent)
@@ -233,7 +275,70 @@ def create_symlink(
             }
         return {"status": "error", "message": f"Failed to create symlink: {exc}"}
 
+    if history_dir is not None:
+        history = SymlinkHistory(
+            timestamp=datetime.now(timezone.utc).isoformat(),
+            target_id=target.id,
+            target_path=target.path,
+            hub_path=hub_dir,
+            operations=move_plan.operations if move_plan else [],
+        )
+        save_symlink_history(history_dir, history)
+
     return {"status": "ok", "message": f"Symlink created: {target.path} -> {hub_dir}"}
+
+
+def undo_symlink(target: AgentTarget, history_dir: Path) -> dict[str, str]:
+    """Undo a symlink creation by restoring skills to the original target directory."""
+    from agent_skills_manager.services.skills import execute_move_plan
+
+    history = load_symlink_history(history_dir, target.id)
+    if history is None:
+        return {
+            "status": "error",
+            "message": "No undo history found for this target. Symlink may have been created before this feature was added, or history was already consumed.",
+        }
+
+    if not target.path.is_symlink():
+        return {
+            "status": "error",
+            "message": "Target is not a symlink; cannot undo.",
+        }
+
+    if any(op.action == "merge" for op in history.operations):
+        return {
+            "status": "error",
+            "message": "Cannot undo this symlink because a merge operation was performed. Manual restoration is required.",
+        }
+
+    try:
+        target.path.unlink()
+    except OSError as exc:
+        return {"status": "error", "message": f"Could not remove symlink: {exc}"}
+
+    target.path.mkdir(parents=True, exist_ok=True)
+
+    reverse_operations: list[MoveOperation] = []
+    for op in history.operations:
+        if op.action == "skip":
+            continue
+        reverse_operations.append(
+            MoveOperation(
+                source=op.destination,
+                destination=op.source,
+                action="move",
+            )
+        )
+
+    if reverse_operations:
+        execute_move_plan(MovePlan(operations=reverse_operations))
+
+    delete_symlink_history(history_dir, target.id)
+
+    return {
+        "status": "ok",
+        "message": f"Symlink undone. Original directory restored: {target.path}",
+    }
 
 
 def remove_symlink(target: AgentTarget, restore: bool = False) -> dict[str, str]:
