@@ -40,7 +40,7 @@ function applyTheme(light) {
     document.body.classList.toggle('light-mode', light);
     document.documentElement.classList.toggle('light-active', light);
     const label = qs('#theme-label');
-    if (label) label.textContent = light ? 'Light' : 'Dark';
+    if (label) label.textContent = light ? 'Dark' : 'Light';
     localStorage.setItem('asm-theme', light ? 'light' : 'dark');
 }
 
@@ -453,8 +453,10 @@ function escapeHtml(str) {
         .replace(/'/g, '&#039;');
 }
 
-// Init
-(async function init() {
-    await loadSkills();
-    await loadTargets();
-})();
+// Init dashboard data only when the dashboard is present
+if (qs('#skills-list')) {
+    (async function init() {
+        await loadSkills();
+        await loadTargets();
+    })();
+}

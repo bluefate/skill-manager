@@ -16,10 +16,18 @@ def client(tmp_path: Path) -> TestClient:
     return TestClient(app)
 
 
-def test_index(client: TestClient) -> None:
+def test_home(client: TestClient) -> None:
     response = client.get("/")
     assert response.status_code == 200
     assert "Agent Skills Manager" in response.text
+    assert "One place for all your agent skills" in response.text
+
+
+def test_dashboard(client: TestClient) -> None:
+    response = client.get("/app")
+    assert response.status_code == 200
+    assert "Agent Skills Manager" in response.text
+    assert "Central Skills" in response.text
 
 
 def test_skills_crud(client: TestClient) -> None:

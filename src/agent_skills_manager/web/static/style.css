@@ -74,6 +74,13 @@ body {
     background: var(--surface-light);
 }
 
+.header-links {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 .version {
     color: var(--text-muted);
     font-size: 0.875rem;
@@ -413,6 +420,73 @@ textarea {
     color: var(--text);
 }
 
+.hero {
+    text-align: center;
+    padding: 2rem 1rem 2.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: var(--gap);
+}
+
+.hero h2 {
+    font-size: 2rem;
+    margin: 0 0 1rem;
+}
+
+.hero .lead {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 44rem;
+    margin: 0 auto 1.5rem;
+    line-height: 1.6;
+}
+
+.hero .lead code {
+    color: var(--primary);
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--gap);
+    margin-bottom: 2.5rem;
+}
+
+.feature-grid .card h3 {
+    margin-top: 0;
+}
+
+.feature-grid .card p {
+    color: var(--text-muted);
+}
+
+.feature-grid .card code {
+    color: var(--primary);
+}
+
+.how-it-works {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--gap);
+}
+
+.how-it-works h2 {
+    margin-top: 0;
+}
+
+.how-it-works ol {
+    padding-left: 1.25rem;
+}
+
+.how-it-works li {
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+}
+
+.how-it-works code {
+    color: var(--primary);
+}
+
 .banner {
     width: 100%;
     max-height: 220px;
@@ -447,11 +521,16 @@ textarea {
     font-size: 0.85rem;
 }
 
-.foot-brand {
-    display: inline-block;
-    font-weight: 700;
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
+.foot-logo {
+    display: block;
+    width: 10rem;
+    height: auto;
+    margin: 0 auto 1rem;
+}
+
+body.light-mode .foot-logo-dark,
+body:not(.light-mode) .foot-logo-light {
+    display: none;
 }
 
 .foot-legal {

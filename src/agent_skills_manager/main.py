@@ -88,7 +88,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     templates = Jinja2Templates(directory=templates_dir)
 
     @app.get("/", response_class=HTMLResponse)
-    async def index(request: Request) -> HTMLResponse:
+    async def home(request: Request) -> HTMLResponse:
+        return templates.TemplateResponse(
+            request,
+            "home.html",
+            {
+                "app_title": settings.app_title,
+                "app_version": settings.app_version,
+            },
+        )
+
+    @app.get("/app", response_class=HTMLResponse)
+    async def dashboard(request: Request) -> HTMLResponse:
         return templates.TemplateResponse(
             request,
             "index.html",

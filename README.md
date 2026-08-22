@@ -43,7 +43,7 @@ pip install -e ".[dev]"
 agent-skills-manager run
 ```
 
-Open <http://127.0.0.1:8000> in your browser.
+Open <http://127.0.0.1:8000> for the home page, then click **Open Dashboard** or go directly to <http://127.0.0.1:8000/app> to manage skills and targets.
 
 ### Custom Options
 

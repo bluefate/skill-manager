@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_title }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+    <script>
+        (function() {
+            if (localStorage.getItem('asm-theme') === 'light') {
+                document.documentElement.classList.add('light-active');
+            }
+        })();
+    </script>
+    <style>
+        html.light-active body { background: #f8fafc; color: #0f172a; }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <img src="/static/logo.svg" alt="" class="app-logo" width="32" height="32">
+        <h1>{{ app_title }}</h1>
+        <span class="version">v{{ app_version }}</span>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle light/dark mode">
+            <span id="theme-label">Dark</span>
+        </button>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <h2>One place for all your agent skills</h2>
+            <p class="lead">
+                Different AI editors and agents expect reusable skills to live in different directories.
+                Agent Skills Manager keeps a single canonical collection in
+                <code>~/.agents/skills/</code> and lets you safely symlink it to every editor your team uses.
+            </p>
+            <a href="/app" class="btn primary">Open Dashboard</a>
+        </section>
+
+        <section class="feature-grid">
+            <div class="card">
+                <h3>Central Skills Hub</h3>
+                <p>Store every skill in <code>~/.agents/skills/</code> with metadata, tags, and descriptions.</p>
+            </div>
+            <div class="card">
+                <h3>Agent Target Symlinks</h3>
+                <p>Preview, move, and symlink directories for Cursor, Claude, Codex, OpenCode, and custom agents.</p>
+            </div>
+            <div class="card">
+                <h3>Project Skill Reviewer</h3>
+                <p>Scan any project for <code>.agents/skills/</code>, <code>.cursor/skills/</code>, <code>.claude/skills/</code>, and other local skill directories.</p>
+            </div>
+            <div class="card">
+                <h3>Safe Workflow</h3>
+                <p>Preview existing skills before replacing a directory with a symlink, with conflict handling.</p>
+            </div>
+        </section>
+
+        <section class="how-it-works">
+            <h2>How it works</h2>
+            <ol>
+                <li><strong>Start the app.</strong> Run <code>agent-skills-manager run</code> and open the dashboard.</li>
+                <li><strong>Manage skills.</strong> Add, edit, and tag skills in the central hub.</li>
+                <li><strong>Link editors.</strong> For each editor, preview the existing skills directory and create a symlink.</li>
+                <li><strong>Review projects.</strong> Scan a project and import its local skills into the central hub.</li>
+            </ol>
+        </section>
+    </main>
+
+    <footer class="app-footer">
+        <p class="foot-note">Keep this tool local. It manages files on your own machine and does not need network access.</p>
+        <a href="https://bluefatelabs.com/" target="_blank" rel="noopener noreferrer">
+            <img class="foot-logo foot-logo-light" alt="BlueFate Labs" src="/static/bluefatelabs-logo.svg" width="160" height="58">
+            <img class="foot-logo foot-logo-dark" alt="BlueFate Labs" src="/static/bluefatelabs-logo-dark.svg" width="160" height="58">
+        </a>
+        <p class="foot-legal">
+            Agent Skills Manager is an open-source project by
+            <a href="https://bluefatelabs.com/" target="_blank" rel="noopener noreferrer">BlueFate Labs</a>
+            · <a href="https://github.com/bluefate/skill-manager/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a>.
+            All trademarks, logos, and copyrights are property of their respective owners.
+        </p>
+        <p class="foot-copy">&copy; 2026 BlueFate Labs. All rights reserved.</p>
+        <a class="coffee-btn" href="https://buy.stripe.com/14A00lalU1ZS0tMauI5gc00" target="_blank" rel="noopener noreferrer">Buy me a coffee</a>
+    </footer>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
