@@ -68,11 +68,40 @@ def _save_custom_targets(targets: list[AgentTarget], settings: Settings) -> None
     )
 
 
+def _default_targets_file(settings: Settings) -> Path:
+    return settings.config_dir / "default-targets.json"
+
+
+def _load_enabled_default_targets(settings: Settings) -> set[str]:
+    defaults_file = _default_targets_file(settings)
+    if not defaults_file.exists():
+        return {t.id for t in get_default_targets()}
+    try:
+        data = json.loads(defaults_file.read_text(encoding="utf-8"))
+        if isinstance(data, list):
+            return set(data)
+    except (json.JSONDecodeError, TypeError):
+        pass
+    return {t.id for t in get_default_targets()}
+
+
+def _save_enabled_default_targets(settings: Settings, enabled_ids: set[str]) -> None:
+    defaults_file = _default_targets_file(settings)
+    settings.ensure_dirs()
+    defaults_file.write_text(
+        json.dumps(sorted(enabled_ids), indent=2),
+        encoding="utf-8",
+    )
+
+
 def _get_all_targets(settings: Settings) -> list[AgentTarget]:
     defaults = get_default_targets()
     custom = _load_custom_targets(settings)
+    enabled_defaults = _load_enabled_default_targets(settings)
     default_ids = {t.id for t in defaults}
-    merged = defaults + [t for t in custom if t.id not in default_ids]
+    merged = [t for t in defaults if t.id in enabled_defaults] + [
+        t for t in custom if t.id not in default_ids
+    ]
     targets = [inspect_target(t, settings.skills_dir) for t in merged]
     for target in targets:
         target.can_undo = load_symlink_history(settings.config_dir, target.id) is not None
@@ -156,6 +185,22 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.get("/api/targets", response_model=list[AgentTarget])
     async def get_targets() -> list[AgentTarget]:
         return _get_all_targets(settings)
+
+    @app.get("/api/targets/defaults", response_model=list[AgentTarget])
+    async def get_default_targets_list() -> list[AgentTarget]:
+        enabled = _load_enabled_default_targets(settings)
+        targets = get_default_targets()
+        for target in targets:
+            target.can_undo = load_symlink_history(settings.config_dir, target.id) is not None
+        return targets
+
+    @app.post("/api/targets/defaults")
+    async def set_default_targets(enabled_ids: list[str]) -> dict[str, str]:
+        valid_ids = {t.id for t in get_default_targets()}
+        if not set(enabled_ids).issubset(valid_ids):
+            raise HTTPException(status_code=400, detail="Invalid default target ID")
+        _save_enabled_default_targets(settings, set(enabled_ids))
+        return {"status": "ok", "message": "Default targets updated"}
 
     @app.post("/api/targets", response_model=AgentTarget)
     async def add_target(target: AgentTarget) -> AgentTarget:

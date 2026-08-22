@@ -32,6 +32,8 @@ const toast = qs('#toast');
 let state = {
     skills: [],
     targets: [],
+    defaultTargets: [],
+    enabledDefaults: [],
     project: null,
 };
 
@@ -177,10 +179,33 @@ qs('#btn-add-skill').addEventListener('click', () => {
             await API.post('/api/skills', { name: data.name, description: data.description, tags, path: '/' });
             closeModal();
             await loadSkills();
-            showToast('Skill saved. Restart your agent/editor to pick it up.');
+            showSkillUsage(data.name);
         }),
     ]);
 });
+
+function showSkillUsage(skillName) {
+    const body = document.createElement('div');
+    body.innerHTML = `
+        <p>Your skill is saved at <code>~/.agents/skills/${escapeHtml(skillName)}/SKILL.md</code>.</p>
+        <p>Two simple ways to use it:</p>
+        <ol>
+            <li>
+                <strong>Via a symlinked agent directory.</strong>
+                Make sure <code>~/.cursor/skills/</code> (or <code>~/.claude/skills/</code>, <code>~/.codex/skills/</code>, <code>~/.config/opencode/skills/</code>) is symlinked to <code>~/.agents/skills/</code>. The agent will see the skill automatically.
+            </li>
+            <li>
+                <strong>Inside a project.</strong>
+                Copy the skill folder into your project’s <code>.agents/skills/</code> or <code>.cursor/skills/</code> directory.
+            </li>
+        </ol>
+        <p class="hint">Remember to restart the agent/editor after adding or changing a skill.</p>
+    `;
+    openModal(`Skill saved: ${skillName}`, body, [
+        makeButton('Got it', 'primary', closeModal),
+    ]);
+    showToast('Skill saved. Restart your agent/editor to pick it up.');
+}
 
 async function editSkill(name) {
     const skill = state.skills.find(s => s.name === name);
@@ -197,7 +222,7 @@ async function editSkill(name) {
             }
             closeModal();
             await loadSkills();
-            showToast('Skill updated. Restart your agent/editor to pick it up.');
+            showSkillUsage(data.name);
         }),
     ]);
 }
@@ -211,8 +236,23 @@ async function deleteSkill(name) {
 
 // Targets
 async function loadTargets() {
-    state.targets = await API.get('/api/targets');
+    const [targets, defaults] = await Promise.all([
+        API.get('/api/targets'),
+        API.get('/api/targets/defaults'),
+    ]);
+    state.targets = targets;
+    state.defaultTargets = defaults;
+    state.enabledDefaults = defaults
+        .filter(d => targets.some(t => t.id === d.id))
+        .map(d => d.id);
     renderTargets();
+    renderDefaultTargets();
+}
+
+async function saveDefaultTargets(enabledIds) {
+    await API.post('/api/targets/defaults', enabledIds);
+    await loadTargets();
+    showToast('Default targets updated');
 }
 
 function renderTargets() {
@@ -258,6 +298,41 @@ function renderTargets() {
 
 function isDefaultTarget(target) {
     return target.is_default;
+}
+
+function renderDefaultTargets() {
+    let container = qs('#default-targets');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'default-targets';
+        container.className = 'default-targets';
+        qs('#targets').insertBefore(container, qs('#targets-list'));
+    }
+
+    if (!state.defaultTargets.length) {
+        container.innerHTML = '';
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="info-box">
+            <strong>Known agent locations</strong> — check the ones you want to manage. Unchecked locations stay hidden from the dashboard.
+            <div class="default-targets-list">
+                ${state.defaultTargets.map(t => `
+                    <label class="checkbox-row">
+                        <input type="checkbox" value="${escapeHtml(t.id)}" ${state.enabledDefaults.includes(t.id) ? 'checked' : ''}>
+                        <span>${escapeHtml(t.name)} <code>${escapeHtml(t.path)}</code></span>
+                    </label>
+                `).join('')}
+            </div>
+            <button class="btn small" id="btn-save-defaults">Save</button>
+        </div>
+    `;
+
+    qs('#btn-save-defaults', container).addEventListener('click', () => {
+        const checked = qsa('input[type="checkbox"]:checked', container).map(cb => cb.value);
+        saveDefaultTargets(checked);
+    });
 }
 
 async function previewTarget(id) {
@@ -368,8 +443,22 @@ async function undoSymlink(id) {
 }
 
 qs('#btn-add-target').addEventListener('click', () => {
+    const presets = [
+        { label: 'Custom', name: '', path: '' },
+        ...state.defaultTargets.map(t => ({ label: t.name, name: t.name, path: t.path })),
+    ];
+    const presetOptions = presets.map((p, i) =>
+        `<option value="${i}">${escapeHtml(p.label)}</option>`
+    ).join('');
+
     const form = document.createElement('form');
     form.innerHTML = `
+        <div class="form-group">
+            <label>Known agent location</label>
+            <select name="preset" class="preset-select">
+                ${presetOptions}
+            </select>
+        </div>
         <div class="form-group">
             <label>Target Name</label>
             <input type="text" name="name" placeholder="My Editor" required>
@@ -379,7 +468,17 @@ qs('#btn-add-target').addEventListener('click', () => {
             <input type="text" name="path" placeholder="~/.myeditor/skills" required>
         </div>
     `;
-    openModal('Add Custom Target', form, [
+
+    const nameInput = qs('input[name="name"]', form);
+    const pathInput = qs('input[name="path"]', form);
+    qs('select[name="preset"]', form).addEventListener('change', () => {
+        const idx = Number(qs('select[name="preset"]', form).value);
+        const p = presets[idx];
+        nameInput.value = p.name;
+        pathInput.value = p.path;
+    });
+
+    openModal('Add Target', form, [
         makeButton('Cancel', '', closeModal),
         makeButton('Add', 'primary', async () => {
             const data = Object.fromEntries(new FormData(form));

@@ -65,6 +65,23 @@ def test_targets_list(client: TestClient) -> None:
     assert any(t["name"] == "Cursor" for t in targets)
 
 
+def test_default_targets(client: TestClient) -> None:
+    response = client.get("/api/targets/defaults")
+    assert response.status_code == 200
+    targets = response.json()
+    assert len(targets) >= 4
+    ids = [t["id"] for t in targets]
+    assert len(set(ids)) == len(ids)
+
+    response = client.post("/api/targets/defaults", json=ids[:2])
+    assert response.status_code == 200
+
+    response = client.get("/api/targets")
+    assert response.status_code == 200
+    active = response.json()
+    assert len(active) == 2
+
+
 def test_target_preview(client: TestClient) -> None:
     targets = client.get("/api/targets").json()
     target = next(t for t in targets if t["name"] == "Codex")

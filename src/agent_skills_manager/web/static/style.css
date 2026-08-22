@@ -434,6 +434,30 @@ textarea {
     color: var(--text);
 }
 
+.default-targets-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0.5rem;
+    margin: 0.75rem 0;
+}
+
+.default-targets-list .checkbox-row {
+    margin-bottom: 0;
+    padding: 0.35rem 0.5rem;
+    background: var(--bg);
+    border-radius: var(--radius);
+}
+
+.preset-select {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.6rem 0.75rem;
+    border-radius: var(--radius);
+    font: inherit;
+}
+
 .hero {
     text-align: center;
     padding: 2rem 1rem 2.5rem;
