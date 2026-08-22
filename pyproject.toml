@@ -10,7 +10,7 @@ readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
 authors = [
-    { name = "Open Source Contributors" },
+    { name = "bluefatelabs" },
 ]
 keywords = ["agents", "skills", "cursor", "claude", "codex", "opencode", "symlink"]
 classifiers = [
@@ -38,6 +38,10 @@ dependencies = [
 dev = [
     "pytest>=8.0.0",
     "httpx>=0.27.0",
+    "Pillow>=10.0.0",
+]
+assets = [
+    "Pillow>=10.0.0",
 ]
 
 [project.scripts]

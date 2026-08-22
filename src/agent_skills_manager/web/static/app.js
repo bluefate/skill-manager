@@ -35,6 +35,27 @@ let state = {
     project: null,
 };
 
+// Theme toggle
+function applyTheme(light) {
+    document.body.classList.toggle('light-mode', light);
+    document.documentElement.classList.toggle('light-active', light);
+    const label = qs('#theme-label');
+    if (label) label.textContent = light ? 'Light' : 'Dark';
+    localStorage.setItem('asm-theme', light ? 'light' : 'dark');
+}
+
+function isLightTheme() {
+    return document.body.classList.contains('light-mode') ||
+        document.documentElement.classList.contains('light-active');
+}
+
+qs('#theme-toggle').addEventListener('click', () => {
+    applyTheme(!isLightTheme());
+});
+
+// Restore saved theme on load
+applyTheme(localStorage.getItem('asm-theme') === 'light');
+
 function showToast(message, type = 'success') {
     toast.textContent = message;
     toast.className = `toast ${type}`;

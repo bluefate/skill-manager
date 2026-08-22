@@ -6,12 +6,41 @@
     <title>{{ app_title }}</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+    <script>
+        (function() {
+            const saved = localStorage.getItem('asm-theme');
+            if (saved === 'light') {
+                document.documentElement.classList.add('light-active');
+            }
+        })();
+    </script>
+    <style>
+        html.light-active body { background: #f8fafc; color: #0f172a; }
+    </style>
 </head>
 <body>
     <header class="app-header">
-        <img src="/static/logo.svg" alt="" class="app-logo" width="32" height="32">
+        <img
+            src="/static/logo-dark-32.png"
+            alt=""
+            class="app-logo theme-img-dark"
+            width="32"
+            height="32"
+            onerror="this.src='/static/logo.svg'"
+        >
+        <img
+            src="/static/logo-light-32.png"
+            alt=""
+            class="app-logo theme-img-light"
+            width="32"
+            height="32"
+            onerror="this.src='/static/logo.svg'"
+        >
         <h1>{{ app_title }}</h1>
         <span class="version">v{{ app_version }}</span>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle light/dark mode">
+            <span id="theme-label">Dark</span>
+        </button>
     </header>
 
     <nav class="tabs" role="tablist">
@@ -21,6 +50,19 @@
     </nav>
 
     <main class="container">
+        <img
+            src="/static/banner-dark.png"
+            alt="Agent Skills Manager banner"
+            class="banner theme-img-dark"
+            onerror="this.style.display='none'"
+        >
+        <img
+            src="/static/banner-light.png"
+            alt="Agent Skills Manager banner"
+            class="banner theme-img-light"
+            onerror="this.style.display='none'"
+        >
+
         <section id="skills" class="panel active">
             <div class="panel-header">
                 <h2>Central Skills</h2>
@@ -61,6 +103,12 @@
             <div id="projects-list" class="card-list"></div>
         </section>
     </main>
+
+    <footer class="app-footer">
+        &copy; 2026 bluefatelabs.
+        Logo and banner generated with ChatGPT / DALL-E.
+        Released under the <a href="https://github.com/bluefate/skill-manager/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>.
+    </footer>
 
     <div id="modal" class="modal hidden">
         <div class="modal-content">
