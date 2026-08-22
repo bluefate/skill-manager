@@ -55,3 +55,16 @@ def test_targets_list(client: TestClient) -> None:
     targets = response.json()
     assert len(targets) >= 4
     assert any(t["name"] == "Cursor" for t in targets)
+
+
+def test_target_preview(client: TestClient) -> None:
+    targets = client.get("/api/targets").json()
+    target = next(t for t in targets if t["name"] == "Codex")
+    response = client.get(
+        "/api/targets/preview",
+        params={"target_id": target["id"], "move_existing": True, "conflict_strategy": "rename"},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert "target" in data
+    assert "can_symlink" in data

@@ -153,8 +153,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         _save_custom_targets(custom, settings)
         return inspect_target(new_target, settings.skills_dir)
 
-    @app.delete("/api/targets/{target_id}")
-    async def delete_target(target_id: str) -> dict[str, str]:
+    @app.delete("/api/targets")
+    async def delete_target(target_id: str = Query(..., description="Target ID")) -> dict[str, str]:
         custom = _load_custom_targets(settings)
         filtered = [t for t in custom if t.id != target_id]
         if len(filtered) == len(custom):
@@ -162,9 +162,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         _save_custom_targets(filtered, settings)
         return {"status": "ok", "message": "Target removed"}
 
-    @app.get("/api/targets/{target_id}/preview")
+    @app.get("/api/targets/preview")
     async def preview_target(
-        target_id: str,
+        target_id: str = Query(..., description="Target ID"),
         move_existing: bool = True,
         conflict_strategy: str = "rename",
     ) -> dict:
@@ -180,7 +180,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         )
         return preview.model_dump(mode="json")
 
-    @app.post("/api/targets/{target_id}/symlink")
+    @app.post("/api/targets/symlink")
     async def symlink_target(request: SymlinkRequest) -> dict[str, str]:
         targets = _get_all_targets(settings)
         target = find_target_by_id(targets, request.target_id)
@@ -193,7 +193,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             conflict_strategy=request.conflict_strategy,
         )
 
-    @app.post("/api/targets/{target_id}/remove-symlink")
+    @app.post("/api/targets/remove-symlink")
     async def unlink_target(request: RemoveSymlinkRequest) -> dict[str, str]:
         targets = _get_all_targets(settings)
         target = find_target_by_id(targets, request.target_id)

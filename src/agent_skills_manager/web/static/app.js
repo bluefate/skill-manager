@@ -156,7 +156,7 @@ qs('#btn-add-skill').addEventListener('click', () => {
             await API.post('/api/skills', { name: data.name, description: data.description, tags, path: '/' });
             closeModal();
             await loadSkills();
-            showToast('Skill saved');
+            showToast('Skill saved. Restart your agent/editor to pick it up.');
         }),
     ]);
 });
@@ -176,7 +176,7 @@ async function editSkill(name) {
             }
             closeModal();
             await loadSkills();
-            showToast('Skill updated');
+            showToast('Skill updated. Restart your agent/editor to pick it up.');
         }),
     ]);
 }
@@ -185,7 +185,7 @@ async function deleteSkill(name) {
     if (!confirm(`Delete skill "${name}"?`)) return;
     await API.delete(`/api/skills/${encodeURIComponent(name)}`);
     await loadSkills();
-    showToast('Skill deleted');
+    showToast('Skill deleted. Restart your agent/editor if it was loaded.');
 }
 
 // Targets
@@ -237,7 +237,7 @@ function isDefaultTarget(target) {
 
 async function previewTarget(id) {
     try {
-        const preview = await API.get(`/api/targets/${encodeURIComponent(id)}/preview?move_existing=true&conflict_strategy=rename`);
+        const preview = await API.get(`/api/targets/preview?target_id=${encodeURIComponent(id)}&move_existing=true&conflict_strategy=rename`);
         const target = preview.target;
         const listItems = preview.existing_skills.map(s =>
             `<li>${escapeHtml(s.name)}${s.description ? ` - ${escapeHtml(s.description)}` : ''}</li>`
@@ -270,14 +270,19 @@ async function previewTarget(id) {
             actions.push(makeButton('Create Symlink', 'primary', async () => {
                 const moveExisting = qs('#move-existing', body).checked;
                 const conflictStrategy = qs('#conflict-strategy', body).value;
-                const result = await API.post('/api/targets/' + encodeURIComponent(id) + '/symlink', {
+                const result = await API.post('/api/targets/symlink', {
                     target_id: id,
                     move_existing: moveExisting,
                     conflict_strategy: conflictStrategy,
                 });
                 closeModal();
                 await loadTargets();
-                showToast(result.message, result.status === 'ok' ? 'success' : 'error');
+                showToast(
+                    result.status === 'ok'
+                        ? `${result.message} Restart that agent/editor to use the hub.`
+                        : result.message,
+                    result.status === 'ok' ? 'success' : 'error'
+                );
             }));
         }
 
@@ -302,13 +307,18 @@ async function removeSymlink(id) {
         makeButton('Cancel', '', closeModal),
         makeButton('Remove', 'danger', async () => {
             const restore = qs('#restore-dir', body).checked;
-            const result = await API.post('/api/targets/' + encodeURIComponent(id) + '/remove-symlink', {
+            const result = await API.post('/api/targets/remove-symlink', {
                 target_id: id,
                 restore,
             });
             closeModal();
             await loadTargets();
-            showToast(result.message, result.status === 'ok' ? 'success' : 'error');
+            showToast(
+                result.status === 'ok'
+                    ? `${result.message} Restart that agent/editor so it reloads its own directory.`
+                    : result.message,
+                result.status === 'ok' ? 'success' : 'error'
+            );
         }),
     ]);
 }
@@ -339,7 +349,7 @@ qs('#btn-add-target').addEventListener('click', () => {
 
 async function deleteTarget(id) {
     if (!confirm('Delete this custom target from the list?')) return;
-    await API.delete(`/api/targets/${encodeURIComponent(id)}`);
+    await API.delete(`/api/targets?target_id=${encodeURIComponent(id)}`);
     await loadTargets();
     showToast('Target deleted');
 }
@@ -404,7 +414,12 @@ async function importFromDir(agentName) {
         conflict_strategy: 'rename',
     });
     await loadSkills();
-    showToast(result.message, result.status === 'ok' ? 'success' : 'error');
+    showToast(
+        result.status === 'ok'
+            ? `${result.message} Restart any agents/editors that should use them.`
+            : result.message,
+        result.status === 'ok' ? 'success' : 'error'
+    );
 }
 
 function escapeHtml(str) {

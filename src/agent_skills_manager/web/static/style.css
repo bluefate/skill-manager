@@ -359,3 +359,22 @@ textarea {
 .skill-select {
     margin-bottom: 0.5rem;
 }
+
+.info-box {
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--primary);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    margin-bottom: var(--gap);
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.info-box code {
+    color: var(--primary);
+}
+
+.info-box strong {
+    color: var(--text);
+}

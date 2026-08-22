@@ -24,7 +24,10 @@
                 <h2>Central Skills</h2>
                 <button id="btn-add-skill" class="btn primary">Add Skill</button>
             </div>
-            <p class="hint">All skills live in <code>~/.agents/skills/</code>.</p>
+            <div class="info-box">
+                All skills live in <code>~/.agents/skills/</code>. Changes here are reflected in every symlinked agent directory.
+                <strong>After adding or editing a skill, restart your agent/editor so it reloads its skill list.</strong>
+            </div>
             <input type="text" id="skill-filter" placeholder="Filter by name or tag...">
             <div id="skills-list" class="card-list"></div>
         </section>
@@ -34,7 +37,10 @@
                 <h2>Agent Targets</h2>
                 <button id="btn-add-target" class="btn primary">Add Target</button>
             </div>
-            <p class="hint">Symlink agent-specific skill directories to the central hub.</p>
+            <div class="info-box">
+                Symlink agent-specific skill directories to the central hub. Preview first to safely move any existing skills.
+                <strong>After creating or removing a symlink, restart that agent/editor.</strong>
+            </div>
             <div id="targets-list" class="card-list"></div>
         </section>
 
@@ -42,7 +48,10 @@
             <div class="panel-header">
                 <h2>Project Reviewer</h2>
             </div>
-            <p class="hint">Scan a project to review skills stored under <code>.agents/skills/</code>, <code>.cursor/skills/</code>, etc.</p>
+            <div class="info-box">
+                Scan a project for its local <code>.agents/skills/</code>, <code>.cursor/skills/</code>, <code>.claude/skills/</code>, <code>.codex/skills/</code>, and <code>.opencode/skills/</code> directories.
+                <strong>After importing skills into the hub, restart any agents/editors that should use them.</strong>
+            </div>
             <div class="form-row">
                 <input type="text" id="project-path" placeholder="/path/to/project" style="flex:1">
                 <button id="btn-scan-project" class="btn primary">Scan</button>
