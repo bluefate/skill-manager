@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_title }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header class="app-header">
+        <h1>{{ app_title }}</h1>
+        <span class="version">v{{ app_version }}</span>
+    </header>
+
+    <nav class="tabs" role="tablist">
+        <button class="tab active" data-tab="skills">Central Skills</button>
+        <button class="tab" data-tab="targets">Agent Targets</button>
+        <button class="tab" data-tab="projects">Project Reviewer</button>
+    </nav>
+
+    <main class="container">
+        <section id="skills" class="panel active">
+            <div class="panel-header">
+                <h2>Central Skills</h2>
+                <button id="btn-add-skill" class="btn primary">Add Skill</button>
+            </div>
+            <p class="hint">All skills live in <code>~/.agents/skills/</code>.</p>
+            <input type="text" id="skill-filter" placeholder="Filter by name or tag...">
+            <div id="skills-list" class="card-list"></div>
+        </section>
+
+        <section id="targets" class="panel">
+            <div class="panel-header">
+                <h2>Agent Targets</h2>
+                <button id="btn-add-target" class="btn primary">Add Target</button>
+            </div>
+            <p class="hint">Symlink agent-specific skill directories to the central hub.</p>
+            <div id="targets-list" class="card-list"></div>
+        </section>
+
+        <section id="projects" class="panel">
+            <div class="panel-header">
+                <h2>Project Reviewer</h2>
+            </div>
+            <p class="hint">Scan a project to review skills stored under <code>.agents/skills/</code>, <code>.cursor/skills/</code>, etc.</p>
+            <div class="form-row">
+                <input type="text" id="project-path" placeholder="/path/to/project" style="flex:1">
+                <button id="btn-scan-project" class="btn primary">Scan</button>
+            </div>
+            <div id="projects-list" class="card-list"></div>
+        </section>
+    </main>
+
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Modal</h3>
+                <button id="modal-close" class="btn icon">&times;</button>
+            </div>
+            <div id="modal-body"></div>
+            <div id="modal-actions" class="modal-actions"></div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
