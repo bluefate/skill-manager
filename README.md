@@ -79,18 +79,13 @@ Creating symlinks on Windows typically requires **Developer Mode** or an elevate
 
 ## License
 
-Copyright &copy; 2026 bluefatelabs. Agent Skills Manager is released under the **MIT License** — a permissive, free/open-source license. See [LICENSE](LICENSE) for the full text.
+Copyright &copy; 2026 BlueFate Labs. Agent Skills Manager is released under the **MIT License** — a permissive, free/open-source license. See [LICENSE](LICENSE) for the full text.
 
 ## Logo / Assets
 
-The web UI supports both dark and light themes. Theme-specific assets are loaded from:
+A simple vector placeholder logo and favicon are provided at `src/agent_skills_manager/web/static/logo.svg`. Replace it with your own SVG or PNG if you want a custom logo.
 
-- `src/agent_skills_manager/web/static/logo-dark.png`
-- `src/agent_skills_manager/web/static/logo-light.png`
-- `src/agent_skills_manager/web/static/banner-dark.png`
-- `src/agent_skills_manager/web/static/banner-light.png`
-
-A vector fallback favicon is provided at `src/agent_skills_manager/web/static/logo.svg`.
+If you generate or add external assets later, make sure you have the right to use and distribute them under the project license.
 
 ### Preparing assets from source images
 

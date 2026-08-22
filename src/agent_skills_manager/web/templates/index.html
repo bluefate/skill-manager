@@ -20,22 +20,7 @@
 </head>
 <body>
     <header class="app-header">
-        <img
-            src="/static/logo-dark-32.png"
-            alt=""
-            class="app-logo theme-img-dark"
-            width="32"
-            height="32"
-            onerror="this.src='/static/logo.svg'"
-        >
-        <img
-            src="/static/logo-light-32.png"
-            alt=""
-            class="app-logo theme-img-light"
-            width="32"
-            height="32"
-            onerror="this.src='/static/logo.svg'"
-        >
+        <img src="/static/logo.svg" alt="" class="app-logo" width="32" height="32">
         <h1>{{ app_title }}</h1>
         <span class="version">v{{ app_version }}</span>
         <button id="theme-toggle" class="theme-toggle" aria-label="Toggle light/dark mode">
@@ -50,19 +35,6 @@
     </nav>
 
     <main class="container">
-        <img
-            src="/static/banner-dark.png"
-            alt="Agent Skills Manager banner"
-            class="banner theme-img-dark"
-            onerror="this.style.display='none'"
-        >
-        <img
-            src="/static/banner-light.png"
-            alt="Agent Skills Manager banner"
-            class="banner theme-img-light"
-            onerror="this.style.display='none'"
-        >
-
         <section id="skills" class="panel active">
             <div class="panel-header">
                 <h2>Central Skills</h2>
@@ -105,9 +77,16 @@
     </main>
 
     <footer class="app-footer">
-        &copy; 2026 bluefatelabs.
-        Logo and banner generated with ChatGPT / DALL-E.
-        Released under the <a href="https://github.com/bluefate/skill-manager/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>.
+        <p class="foot-note">Keep this tool local. It manages files on your own machine and does not need network access.</p>
+        <a href="https://bluefatelabs.com/" target="_blank" rel="noopener noreferrer" class="foot-brand">BlueFate Labs</a>
+        <p class="foot-legal">
+            Agent Skills Manager is an open-source project by
+            <a href="https://bluefatelabs.com/" target="_blank" rel="noopener noreferrer">BlueFate Labs</a>
+            · <a href="https://github.com/bluefate/skill-manager/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a>.
+            All trademarks, logos, and copyrights are property of their respective owners.
+        </p>
+        <p class="foot-copy">&copy; 2026 BlueFate Labs. All rights reserved.</p>
+        <a class="coffee-btn" href="https://buy.stripe.com/14A00lalU1ZS0tMauI5gc00" target="_blank" rel="noopener noreferrer">Buy me a coffee</a>
     </footer>
 
     <div id="modal" class="modal hidden">

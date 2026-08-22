@@ -10,7 +10,7 @@ readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
 authors = [
-    { name = "bluefatelabs" },
+    { name = "BlueFate Labs" },
 ]
 keywords = ["agents", "skills", "cursor", "claude", "codex", "opencode", "symlink"]
 classifiers = [

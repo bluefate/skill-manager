@@ -423,7 +423,7 @@ textarea {
 }
 
 .app-footer {
-    padding: 1.5rem var(--gap);
+    padding: 2rem var(--gap);
     border-top: 1px solid var(--border);
     background: var(--surface);
     color: var(--text-muted);
@@ -439,6 +439,59 @@ textarea {
 
 .app-footer a:hover {
     text-decoration: underline;
+}
+
+.foot-note {
+    max-width: 36rem;
+    margin: 0 auto 1rem;
+    font-size: 0.85rem;
+}
+
+.foot-brand {
+    display: inline-block;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.foot-legal {
+    max-width: 40rem;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.foot-copy {
+    margin-top: 0.5rem;
+}
+
+.coffee-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 1rem;
+    padding: 0.55rem 0.95rem;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #ffdb7d, #d4a05a);
+    color: #3f2e18 !important;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid rgba(212, 160, 90, 0.45);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+    transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.coffee-btn::before {
+    content: "";
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50% 50% 45% 45%;
+    background: #5c3a22;
+    box-shadow: 0 -0.18rem 0 0.08rem #8b5a33;
+}
+
+.coffee-btn:hover {
+    filter: brightness(1.06);
+    transform: translateY(-1px);
 }
 
 body.light-mode .theme-img-dark,
