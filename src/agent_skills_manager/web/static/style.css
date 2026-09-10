@@ -497,6 +497,38 @@ textarea {
     color: var(--text);
 }
 
+.capability-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-bottom: var(--gap);
+}
+
+.capability-card {
+    min-width: 0;
+    padding: 0.875rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+}
+
+.capability-card h3 {
+    margin: 0 0 0.35rem;
+    font-size: 0.95rem;
+}
+
+.capability-card p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.capability-card strong {
+    color: var(--text);
+    font-weight: 600;
+}
+
 .default-targets-list {
     display: grid;
     grid-template-columns: 1fr;
@@ -800,6 +832,10 @@ body:not(.light-mode) .theme-img-light {
 
     .container {
         padding: 0.75rem;
+    }
+
+    .capability-grid {
+        grid-template-columns: 1fr;
     }
 
     .hero {
