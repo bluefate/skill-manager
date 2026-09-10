@@ -246,8 +246,16 @@ textarea {
 }
 
 .skills-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     margin-top: var(--gap);
+}
+
+.targets-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.targets-grid .card {
+    min-width: 0;
 }
 
 .skills-grid .card {
@@ -281,7 +289,8 @@ textarea {
 }
 
 @media (max-width: 560px) {
-    .skills-grid {
+    .skills-grid,
+    .targets-grid {
         grid-template-columns: 1fr;
     }
 }
