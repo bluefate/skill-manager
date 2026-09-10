@@ -28,6 +28,7 @@ from agent_skills_manager.services.skills import (
     delete_skill,
     list_skills,
     read_skill,
+    read_skill_content,
     rename_skill,
     write_skill_metadata,
 )
@@ -164,6 +165,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         if skill is None:
             raise HTTPException(status_code=404, detail="Skill not found")
         return skill
+
+    @app.get("/api/skills/{skill_name}/content")
+    async def get_skill_content(skill_name: str) -> dict[str, str]:
+        skill_path = settings.skills_dir / skill_name
+        content = read_skill_content(skill_path)
+        if content is None:
+            raise HTTPException(status_code=404, detail="Skill text not found")
+        return {"content": content}
 
     @app.post("/api/skills", response_model=Skill)
     async def create_or_update_skill(skill: Skill) -> Skill:

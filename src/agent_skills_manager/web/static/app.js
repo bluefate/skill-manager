@@ -135,6 +135,7 @@ function renderSkills() {
             <div class="card-tags">${s.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>
             <div class="actions">
                 <button class="btn small" data-edit="${escapeHtml(s.name)}">Edit</button>
+                <button class="btn small" data-preview-skill="${escapeHtml(s.name)}">Preview</button>
                 <button class="btn small danger" data-delete="${escapeHtml(s.name)}">Delete</button>
             </div>
         </div>
@@ -143,9 +144,23 @@ function renderSkills() {
     qsa('[data-edit]', list).forEach(btn => {
         btn.addEventListener('click', () => editSkill(btn.dataset.edit));
     });
+    qsa('[data-preview-skill]', list).forEach(btn => {
+        btn.addEventListener('click', () => previewSkill(btn.dataset.previewSkill));
+    });
     qsa('[data-delete]', list).forEach(btn => {
         btn.addEventListener('click', () => deleteSkill(btn.dataset.delete));
     });
+}
+
+async function previewSkill(name) {
+    try {
+        const { content } = await API.get(`/api/skills/${encodeURIComponent(name)}/content`);
+        const body = document.createElement('div');
+        body.innerHTML = `<p class="skill-preview-path"><code>~/.agents/skills/${escapeHtml(name)}/SKILL.md</code></p><pre class="skill-preview"><code>${escapeHtml(content)}</code></pre>`;
+        openModal(`Preview: ${name}`, body, [makeButton('Close', 'primary', closeModal)]);
+    } catch (err) {
+        showToast(err.message, 'error');
+    }
 }
 
 qs('#skill-filter').addEventListener('input', renderSkills);
@@ -345,9 +360,9 @@ function renderDefaultTargets() {
     });
 }
 
-async function previewTarget(id) {
+async function previewTarget(id, conflictStrategy = 'rename') {
     try {
-        const preview = await API.get(`/api/targets/preview?target_id=${encodeURIComponent(id)}&move_existing=true&conflict_strategy=rename`);
+        const preview = await API.get(`/api/targets/preview?target_id=${encodeURIComponent(id)}&move_existing=true&conflict_strategy=${encodeURIComponent(conflictStrategy)}`);
         const target = preview.target;
         const listItems = preview.existing_skills.map(s =>
             `<li>${escapeHtml(s.name)}${s.description ? ` - ${escapeHtml(s.description)}` : ''}</li>`
@@ -361,7 +376,7 @@ async function previewTarget(id) {
             <p>${escapeHtml(preview.message)}</p>
             ${operations ? `<h4>Execution plan</h4><pre class="execution-plan"><code>${operations}</code></pre>` : ''}
             ${listItems ? `<h4>Existing skills (${preview.existing_skills.length})</h4><ul class="preview-list">${listItems}</ul>` : ''}
-            ${conflicts ? `<h4>Conflicts</h4><ul class="preview-list">${conflicts}</ul>` : ''}
+            ${conflicts ? `<h4>Conflicts</h4><p class="modal-help">A conflict means a skill with the same name already exists in the central hub. Choose how to keep both versions below.</p><ul class="preview-list">${conflicts}</ul>` : ''}
             <div class="checkbox-row">
                 <input type="checkbox" id="move-existing" checked>
                 <label for="move-existing">Move existing skills into central hub</label>
@@ -369,12 +384,17 @@ async function previewTarget(id) {
             <div class="form-group">
                 <label>Conflict strategy</label>
                 <select id="conflict-strategy">
-                    <option value="rename">Rename (e.g. skill -> skill_1)</option>
-                    <option value="skip">Skip conflicts</option>
-                    <option value="merge">Merge directories</option>
+                    <option value="rename" ${conflictStrategy === 'rename' ? 'selected' : ''}>Rename (e.g. skill -> skill_1)</option>
+                    <option value="merge" ${conflictStrategy === 'merge' ? 'selected' : ''}>Merge directories</option>
+                    <option value="discard" ${conflictStrategy === 'discard' ? 'selected' : ''}>Delete duplicate from target</option>
                 </select>
             </div>
+            ${conflictStrategy === 'discard' ? `<div class="checkbox-row"><input type="checkbox" id="confirm-discard"><label for="confirm-discard">I understand the duplicate in the target will be permanently deleted.</label></div>` : ''}
         `;
+
+        qs('#conflict-strategy', body).addEventListener('change', (event) => {
+            previewTarget(id, event.target.value);
+        });
 
         const actions = [
             makeButton('Cancel', '', closeModal),
@@ -383,6 +403,10 @@ async function previewTarget(id) {
             actions.push(makeButton('Create Symlink', 'primary', async () => {
                 const moveExisting = qs('#move-existing', body).checked;
                 const conflictStrategy = qs('#conflict-strategy', body).value;
+                if (conflictStrategy === 'discard' && !qs('#confirm-discard', body).checked) {
+                    showToast('Confirm that the duplicate in the target can be deleted.', 'error');
+                    return;
+                }
                 const result = await API.post('/api/targets/symlink', {
                     target_id: id,
                     move_existing: moveExisting,

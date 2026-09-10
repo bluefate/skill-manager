@@ -41,7 +41,7 @@ class MoveOperation(BaseModel):
 
     source: Path
     destination: Path
-    action: Literal["move", "rename", "skip", "merge"]
+    action: Literal["move", "rename", "skip", "merge", "discard"]
 
 
 class MovePlan(BaseModel):
@@ -80,7 +80,7 @@ class SymlinkRequest(BaseModel):
 
     target_id: str
     move_existing: bool = True
-    conflict_strategy: Literal["rename", "skip", "merge"] = "rename"
+    conflict_strategy: Literal["rename", "skip", "merge", "discard"] = "rename"
 
 
 class RemoveSymlinkRequest(BaseModel):

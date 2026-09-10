@@ -61,6 +61,10 @@ def test_skills_crud(client: TestClient) -> None:
     assert response.status_code == 200
     assert response.json()["description"] == "A test skill"
 
+    response = client.get("/api/skills/test-skill/content")
+    assert response.status_code == 200
+    assert "name: test-skill" in response.json()["content"]
+
     response = client.delete("/api/skills/test-skill")
     assert response.status_code == 200
 

@@ -174,6 +174,8 @@ def preview_symlink_target(
         for op in move_plan.operations:
             if op.action == "skip":
                 operations.append(f"Skip '{op.source.name}' (already exists in hub)")
+            elif op.action == "discard":
+                operations.append(f"Delete '{op.source.name}' from target (central hub copy is kept)")
             elif op.action == "rename":
                 operations.append(
                     f"Move '{op.source.name}' -> '{op.destination.name}' in {hub_dir} (renamed to avoid conflict)"
@@ -185,11 +187,14 @@ def preview_symlink_target(
             else:
                 operations.append(f"Move '{op.source.name}' -> {op.destination}")
 
-        conflicts = [
-            f"'{op.source.name}' will be renamed to '{op.destination.name}'"
-            for op in move_plan.operations
-            if op.action == "rename"
-        ]
+        conflicts = []
+        for op in move_plan.operations:
+            if op.action == "rename":
+                conflicts.append(f"'{op.source.name}' will be renamed to '{op.destination.name}'")
+            elif op.action == "discard":
+                conflicts.append(f"'{op.source.name}' will be deleted from the target; the hub copy is kept")
+            elif op.action == "merge":
+                conflicts.append(f"'{op.source.name}' will be merged with the hub copy")
         result.conflicts = conflicts
         operations.extend([
             f"Remove directory: {target.path}",
@@ -198,7 +203,7 @@ def preview_symlink_target(
         result.operations = operations
         result.message = (
             f"Found {len(result.existing_skills)} existing skill(s). "
-            "They will be moved into the central hub before the symlink is created."
+            "They will be handled before the symlink is created."
         )
         if conflicts:
             result.message += f" {len(conflicts)} conflict(s) will be renamed."
@@ -305,10 +310,10 @@ def undo_symlink(target: AgentTarget, history_dir: Path) -> dict[str, str]:
             "message": "Target is not a symlink; cannot undo.",
         }
 
-    if any(op.action == "merge" for op in history.operations):
+    if any(op.action in ("merge", "discard") for op in history.operations):
         return {
             "status": "error",
-            "message": "Cannot undo this symlink because a merge operation was performed. Manual restoration is required.",
+            "message": "Cannot undo this symlink because a merge or delete operation was performed. Manual restoration is required.",
         }
 
     try:
