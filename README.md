@@ -71,6 +71,16 @@ pip install --upgrade agent-skills-manager
 agent-skills-manager run
 ```
 
+### Port 8000 Is Already in Use
+
+This applies whether you installed from source or PyPI. Another copy of the app is usually still running. Reuse the app already available at <http://127.0.0.1:8000>, or stop the earlier server with `Ctrl+C` in the terminal where it was started before running the command again.
+
+To run a second copy instead, choose a different port and open that address in your browser:
+
+```bash
+agent-skills-manager run --port 8001
+```
+
 ### Custom Options
 
 ```bash
