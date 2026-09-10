@@ -107,8 +107,6 @@ Creating symlinks on Windows typically requires **Developer Mode** or an elevate
 
 Copyright &copy; 2026 BlueFate Labs. Agent Skills Manager is released under the **MIT License**, a permissive, free/open-source license. See [LICENSE](LICENSE) for the full text.
 
-The bundled JetBrains Mono webfont is licensed separately under the SIL Open Font License 1.1. Its license text is included at [JetBrainsMono-OFL.txt](src/agent_skills_manager/web/static/JetBrainsMono-OFL.txt).
-
 ## Logo / Assets
 
 A simple vector placeholder logo and favicon are provided at `src/agent_skills_manager/web/static/logo.svg`. Replace it with your own SVG or PNG if you want a custom logo.

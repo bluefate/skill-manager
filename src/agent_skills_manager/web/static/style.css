@@ -1,29 +1,5 @@
-@font-face {
-    font-family: "JetBrains Mono";
-    src: url("/static/JetBrainsMono-Regular.woff2") format("woff2");
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: "JetBrains Mono";
-    src: url("/static/JetBrainsMono-Medium.woff2") format("woff2");
-    font-weight: 500;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: "JetBrains Mono";
-    src: url("/static/JetBrainsMono-Bold.woff2") format("woff2");
-    font-weight: 600 700;
-    font-style: normal;
-    font-display: swap;
-}
-
 :root {
-    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     --bg: #0b1220;
     --surface: #172033;
     --surface-light: #24324a;
@@ -557,7 +533,7 @@ textarea {
     background: var(--bg);
     color: var(--primary);
     font-family: var(--font-mono);
-    font-size: 0.8rem;
+    font-size: 0.8125rem;
     line-height: 1.55;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
@@ -875,6 +851,7 @@ textarea {
     border-radius: var(--radius);
     background: var(--bg);
     color: var(--primary);
+    font-size: 0.875rem;
     line-height: 1.6;
 }
 
