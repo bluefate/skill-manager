@@ -62,6 +62,8 @@ def list_skills(directory: Path, source: str = "") -> list[Skill]:
         return []
     skills: list[Skill] = []
     for entry in sorted(directory.iterdir()):
+        if entry.name == ".system":
+            continue
         if entry.is_dir() or entry.is_symlink():
             skills.append(_build_skill_from_dir(entry, source=source))
     return skills

@@ -76,6 +76,13 @@ def test_plan_move_to_hub_no_conflict(tmp_path: Path) -> None:
     assert plan.operations[0].destination == hub / "shared"
 
 
+def test_list_skills_hides_codex_system_container(tmp_path: Path) -> None:
+    write_skill_metadata(tmp_path / ".system" / "internal", "Internal", "", [])
+    write_skill_metadata(tmp_path / "visible", "Visible", "", [])
+
+    assert [skill.name for skill in list_skills(tmp_path)] == ["Visible"]
+
+
 def test_plan_move_to_hub_rename_conflict(tmp_path: Path) -> None:
     source = tmp_path / "source"
     hub = tmp_path / "hub"

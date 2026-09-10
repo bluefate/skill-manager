@@ -117,6 +117,8 @@ Creating symlinks on Windows typically requires **Developer Mode** or an elevate
 
 Copyright &copy; 2026 BlueFate Labs. Agent Skills Manager is released under the **MIT License**, a permissive, free/open-source license. See [LICENSE](LICENSE) for the full text.
 
+The bundled Markdown preview uses [Marked](src/agent_skills_manager/web/static/MARKED-LICENSE.txt), licensed under MIT, and [DOMPurify](src/agent_skills_manager/web/static/DOMPURIFY-LICENSE.txt), licensed under Apache-2.0 or MPL-2.0.
+
 ## Logo / Assets
 
 A simple vector placeholder logo and favicon are provided at `src/agent_skills_manager/web/static/logo.svg`. Replace it with your own SVG or PNG if you want a custom logo.

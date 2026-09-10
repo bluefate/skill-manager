@@ -177,7 +177,17 @@ async function previewSkill(name) {
     try {
         const { content } = await API.get(`/api/skills/${encodeURIComponent(name)}/content`);
         const body = document.createElement('div');
-        body.innerHTML = `<p class="skill-preview-path"><code>~/.agents/skills/${escapeHtml(name)}/SKILL.md</code></p><pre class="skill-preview"><code>${escapeHtml(content)}</code></pre>`;
+        body.innerHTML = `<p class="skill-preview-path"><code>~/.agents/skills/${escapeHtml(name)}/SKILL.md</code></p>`;
+        const frontmatterEnd = content.startsWith('---\n') ? content.indexOf('\n---', 4) : -1;
+        const markdown = frontmatterEnd >= 0 ? content.slice(frontmatterEnd + 4).trim() : content;
+        const preview = document.createElement('div');
+        preview.className = 'markdown-preview';
+        if (window.marked && window.DOMPurify) {
+            preview.innerHTML = DOMPurify.sanitize(marked.parse(markdown, { gfm: true }));
+        } else {
+            preview.textContent = markdown;
+        }
+        body.appendChild(preview);
         openModal(`Preview: ${name}`, body, [makeButton('Close', 'primary', closeModal)]);
     } catch (err) {
         showToast(err.message, 'error');
