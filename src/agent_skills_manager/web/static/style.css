@@ -537,6 +537,10 @@ textarea {
     font-size: 0.875rem;
 }
 
+.conflict-strategy-help {
+    margin: 0.35rem 0 0.5rem;
+}
+
 .skill-preview-path {
     margin-top: 0;
 }
