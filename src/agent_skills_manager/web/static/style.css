@@ -1,3 +1,27 @@
+@font-face {
+    font-family: "JetBrains Mono";
+    src: url("/static/JetBrainsMono-Regular.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "JetBrains Mono";
+    src: url("/static/JetBrainsMono-Medium.woff2") format("woff2");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "JetBrains Mono";
+    src: url("/static/JetBrainsMono-Bold.woff2") format("woff2");
+    font-weight: 600 700;
+    font-style: normal;
+    font-display: swap;
+}
+
 :root {
     --bg: #0b1220;
     --surface: #172033;
@@ -60,7 +84,7 @@ body.light-mode {
 
 body {
     margin: 0;
-    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     background: var(--bg);
     color: var(--text);
     line-height: 1.5;
@@ -525,7 +549,7 @@ textarea {
     border-radius: var(--radius);
     background: var(--bg);
     color: var(--primary);
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     font-size: 0.8rem;
     line-height: 1.55;
     white-space: pre-wrap;
@@ -849,7 +873,7 @@ textarea {
 
 .update-card code,
 .update-note code {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 .update-note {
