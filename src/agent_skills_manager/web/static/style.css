@@ -40,9 +40,17 @@ body {
     line-height: 1.5;
 }
 
+h1, h2, h3, h4 {
+    text-wrap: balance;
+}
+
+p {
+    text-wrap: pretty;
+}
+
 .app-header {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 0.75rem;
     padding: 1.25rem var(--gap);
     border-bottom: 1px solid var(--border);
@@ -52,6 +60,7 @@ body {
 .app-header h1 {
     margin: 0;
     font-size: 1.5rem;
+    line-height: 1.2;
 }
 
 .app-logo {
@@ -79,6 +88,10 @@ body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+}
+
+.header-links .theme-toggle {
+    margin-left: 0;
 }
 
 .version {
@@ -551,11 +564,12 @@ textarea {
 }
 
 .feature-grid .card h3 {
-    margin-top: 0;
+    margin: 0 0 0.75rem;
 }
 
 .feature-grid .card p {
     color: var(--text-muted);
+    margin: 0;
 }
 
 .feature-grid .card code {
@@ -570,16 +584,21 @@ textarea {
 }
 
 .how-it-works h2 {
-    margin-top: 0;
+    margin: 0 0 var(--gap);
 }
 
 .how-it-works ol {
+    margin: 0;
     padding-left: 1.25rem;
 }
 
 .how-it-works li {
     margin-bottom: 0.75rem;
     line-height: 1.6;
+}
+
+.how-it-works li:last-child {
+    margin-bottom: 0;
 }
 
 .how-it-works code {
@@ -675,4 +694,51 @@ body:not(.light-mode) .foot-logo-light {
 body.light-mode .theme-img-dark,
 body:not(.light-mode) .theme-img-light {
     display: none;
+}
+
+@media (max-width: 560px) {
+    .app-header {
+        gap: 0.5rem;
+        padding: 0.875rem 0.75rem;
+    }
+
+    .app-header h1 {
+        flex: 1;
+        font-size: 1.125rem;
+        white-space: nowrap;
+    }
+
+    .version {
+        display: none;
+    }
+
+    .tabs {
+        gap: 0.25rem;
+        padding: 0.75rem;
+    }
+
+    .tab {
+        flex: 1;
+        padding: 0.5rem 0.35rem;
+    }
+
+    .container {
+        padding: 0.75rem;
+    }
+
+    .hero {
+        padding: 1.75rem 0.25rem 2.25rem;
+    }
+
+    .hero h2 {
+        font-size: 1.75rem;
+    }
+
+    .form-row {
+        gap: 0.5rem;
+    }
+
+    .modal-content {
+        width: calc(100% - 1.5rem);
+    }
 }
