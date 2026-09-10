@@ -408,38 +408,43 @@ async function previewTarget(id, conflictStrategy = 'rename') {
             ${operations ? `<h4>Execution plan</h4><pre class="execution-plan"><code>${operations}</code></pre>` : ''}
             ${listItems ? `<h4>Existing skills (${preview.existing_skills.length})</h4><ul class="preview-list">${listItems}</ul>` : ''}
             ${conflicts ? `<h4>Conflicts</h4><p class="modal-help">A conflict means a skill with the same name already exists in the central hub. Choose how to keep both versions below.</p><ul class="preview-list">${conflicts}</ul>` : ''}
-            <div class="checkbox-row">
-                <input type="checkbox" id="move-existing" checked>
-                <label for="move-existing">Move existing skills into central hub</label>
-            </div>
-            <div class="form-group">
-                <label>Conflict strategy</label>
-                <div class="modal-help conflict-strategy-help">
-                    <p><strong>Rename</strong> keeps both complete skills by giving the incoming one a new name.</p>
-                    <p><strong>Merge</strong> keeps the global skill and adds only agent-location files that are missing from it.</p>
-                    <p><strong>Delete duplicate</strong> keeps the global skill unchanged and permanently deletes the duplicate from the agent location.</p>
+            ${preview.existing_skills.length ? `
+                <div class="checkbox-row">
+                    <input type="checkbox" id="move-existing" checked>
+                    <label for="move-existing">Move existing skills into central hub</label>
                 </div>
-                <select id="conflict-strategy" class="preset-select">
-                    <option value="rename" ${conflictStrategy === 'rename' ? 'selected' : ''}>Rename (e.g. skill -> skill_1)</option>
-                    <option value="merge" ${conflictStrategy === 'merge' ? 'selected' : ''}>Merge directories</option>
-                    <option value="discard" ${conflictStrategy === 'discard' ? 'selected' : ''}>Delete duplicate from agent location</option>
-                </select>
-            </div>
-            ${conflictStrategy === 'discard' ? `<div class="checkbox-row"><input type="checkbox" id="confirm-discard"><label for="confirm-discard">I understand the duplicate in the agent location will be permanently deleted.</label></div>` : ''}
+                <div class="form-group">
+                    <label>Conflict strategy</label>
+                    <div class="modal-help conflict-strategy-help">
+                        <p><strong>Rename</strong> keeps both complete skills by giving the incoming one a new name.</p>
+                        <p><strong>Merge</strong> keeps the global skill and adds only agent-location files that are missing from it.</p>
+                        <p><strong>Delete duplicate</strong> keeps the global skill unchanged and permanently deletes the duplicate from the agent location.</p>
+                    </div>
+                    <select id="conflict-strategy" class="preset-select">
+                        <option value="rename" ${conflictStrategy === 'rename' ? 'selected' : ''}>Rename (e.g. skill -> skill_1)</option>
+                        <option value="merge" ${conflictStrategy === 'merge' ? 'selected' : ''}>Merge directories</option>
+                        <option value="discard" ${conflictStrategy === 'discard' ? 'selected' : ''}>Delete duplicate from agent location</option>
+                    </select>
+                </div>
+                ${conflictStrategy === 'discard' ? `<div class="checkbox-row"><input type="checkbox" id="confirm-discard"><label for="confirm-discard">I understand the duplicate in the agent location will be permanently deleted.</label></div>` : ''}
+            ` : ''}
         `;
 
-        qs('#conflict-strategy', body).addEventListener('change', (event) => {
-            previewTarget(id, event.target.value);
-        });
+        const conflictSelect = qs('#conflict-strategy', body);
+        if (conflictSelect) {
+            conflictSelect.addEventListener('change', (event) => {
+                previewTarget(id, event.target.value);
+            });
+        }
 
         const actions = [
             makeButton('Cancel', '', closeModal),
         ];
         if (preview.can_symlink) {
             actions.push(makeButton('Create Symlink', 'primary', async () => {
-                const moveExisting = qs('#move-existing', body).checked;
-                const conflictStrategy = qs('#conflict-strategy', body).value;
-                if (conflictStrategy === 'discard' && !qs('#confirm-discard', body).checked) {
+                const moveExisting = qs('#move-existing', body)?.checked ?? false;
+                const conflictStrategy = qs('#conflict-strategy', body)?.value ?? 'rename';
+                if (conflictStrategy === 'discard' && !qs('#confirm-discard', body)?.checked) {
                     showToast('Confirm that the duplicate in the agent location can be deleted.', 'error');
                     return;
                 }
