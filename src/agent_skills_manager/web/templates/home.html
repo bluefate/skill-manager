@@ -67,6 +67,30 @@
                 <li><strong>Review projects.</strong> Scan a project and import its local skills into the central hub.</li>
             </ol>
         </section>
+
+        <section class="update-guide">
+            <div class="section-heading">
+                <h2>Keep the app up to date</h2>
+                <p>Choose the update method that matches how you installed Agent Skills Manager.</p>
+            </div>
+            <div class="update-grid">
+                <article class="card update-card">
+                    <h3>Installed from source</h3>
+                    <p>Pull the latest changes and refresh the editable installation.</p>
+                    <pre><code>git switch main
+git pull
+.venv/bin/pip install -e ".[dev]"
+.venv/bin/agent-skills-manager run</code></pre>
+                </article>
+                <article class="card update-card">
+                    <h3>Installed from PyPI</h3>
+                    <p>Upgrade the package, then start the app again.</p>
+                    <pre><code>pip install --upgrade agent-skills-manager
+agent-skills-manager run</code></pre>
+                </article>
+            </div>
+            <p class="update-note"><strong>Already running?</strong> Stop the server with <code>Ctrl+C</code>, restart it, then hard-refresh your browser with <code>Cmd+Shift+R</code> on macOS or <code>Ctrl+Shift+R</code> on Windows and Linux.</p>
+        </section>
     </main>
 
     <footer class="app-footer">

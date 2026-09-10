@@ -605,6 +605,73 @@ textarea {
     color: var(--primary);
 }
 
+.update-guide {
+    margin-top: 2.5rem;
+}
+
+.section-heading {
+    margin-bottom: var(--gap);
+}
+
+.section-heading h2 {
+    margin: 0 0 0.5rem;
+}
+
+.section-heading p {
+    margin: 0;
+    color: var(--text-muted);
+}
+
+.update-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--gap);
+}
+
+.update-card h3 {
+    margin: 0 0 0.5rem;
+}
+
+.update-card {
+    min-width: 0;
+}
+
+.update-card p {
+    margin: 0 0 var(--gap);
+    color: var(--text-muted);
+}
+
+.update-card pre {
+    max-width: 100%;
+    margin: 0;
+    padding: 0.75rem;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg);
+    color: var(--primary);
+    line-height: 1.6;
+}
+
+.update-card code,
+.update-note code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.update-note {
+    margin: var(--gap) 0 0;
+    padding: 0.75rem 1rem;
+    border-left: 4px solid var(--primary);
+    border-radius: var(--radius);
+    background: var(--surface-light);
+    color: var(--text-muted);
+}
+
+.update-note strong,
+.update-note code {
+    color: var(--text);
+}
+
 .banner {
     width: 100%;
     max-height: 220px;
@@ -732,6 +799,14 @@ body:not(.light-mode) .theme-img-light {
 
     .hero h2 {
         font-size: 1.75rem;
+    }
+
+    .update-guide {
+        margin-top: 2rem;
+    }
+
+    .update-grid {
+        grid-template-columns: 1fr;
     }
 
     .form-row {
