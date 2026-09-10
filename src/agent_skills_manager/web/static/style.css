@@ -1,31 +1,57 @@
 :root {
-    --bg: #0f172a;
-    --surface: #1e293b;
-    --surface-light: #334155;
+    --bg: #0b1220;
+    --surface: #172033;
+    --surface-light: #24324a;
+    --surface-hover: #31415d;
     --text: #f8fafc;
-    --text-muted: #94a3b8;
+    --text-muted: #a5b4c8;
     --primary: #38bdf8;
     --primary-hover: #7dd3fc;
+    --primary-contrast: #082f49;
     --success: #4ade80;
+    --success-hover: #86efac;
+    --success-contrast: #052e16;
     --warning: #facc15;
-    --danger: #f87171;
-    --border: #475569;
+    --warning-hover: #fde047;
+    --warning-contrast: #422006;
+    --danger: #fb7185;
+    --danger-hover: #fda4af;
+    --danger-contrast: #4c0519;
+    --border: #3b4b65;
+    --focus-ring: #7dd3fc;
+    --overlay: rgba(2, 6, 23, 0.72);
+    --coffee: #fbbf24;
+    --coffee-hover: #fcd34d;
+    --coffee-contrast: #422006;
     --radius: 8px;
     --gap: 1rem;
 }
 
 body.light-mode {
-    --bg: #f8fafc;
+    --bg: #f5f7fb;
     --surface: #ffffff;
-    --surface-light: #f1f5f9;
-    --text: #0f172a;
-    --text-muted: #64748b;
-    --primary: #0284c7;
-    --primary-hover: #0369a1;
-    --success: #16a34a;
-    --warning: #ca8a04;
+    --surface-light: #eef3f8;
+    --surface-hover: #e2e8f0;
+    --text: #111827;
+    --text-muted: #5f6f82;
+    --primary: #0369a1;
+    --primary-hover: #075985;
+    --primary-contrast: #ffffff;
+    --success: #15803d;
+    --success-hover: #166534;
+    --success-contrast: #ffffff;
+    --warning: #b45309;
+    --warning-hover: #92400e;
+    --warning-contrast: #ffffff;
     --danger: #dc2626;
-    --border: #cbd5e1;
+    --danger-hover: #b91c1c;
+    --danger-contrast: #ffffff;
+    --border: #d5dee9;
+    --focus-ring: #0284c7;
+    --overlay: rgba(15, 23, 42, 0.58);
+    --coffee: #92400e;
+    --coffee-hover: #78350f;
+    --coffee-contrast: #ffffff;
 }
 
 * {
@@ -172,13 +198,13 @@ p {
 }
 
 .btn:hover {
-    background: #475569;
+    background: var(--surface-hover);
 }
 
 .btn.primary {
     background: var(--primary);
     border-color: var(--primary);
-    color: #0f172a;
+    color: var(--primary-contrast);
 }
 
 .btn.primary:hover {
@@ -188,19 +214,34 @@ p {
 .btn.success {
     background: var(--success);
     border-color: var(--success);
-    color: #0f172a;
+    color: var(--success-contrast);
+}
+
+.btn.success:hover {
+    background: var(--success-hover);
+    border-color: var(--success-hover);
 }
 
 .btn.danger {
     background: var(--danger);
     border-color: var(--danger);
-    color: #0f172a;
+    color: var(--danger-contrast);
+}
+
+.btn.danger:hover {
+    background: var(--danger-hover);
+    border-color: var(--danger-hover);
 }
 
 .btn.warning {
     background: var(--warning);
     border-color: var(--warning);
-    color: #0f172a;
+    color: var(--warning-contrast);
+}
+
+.btn.warning:hover {
+    background: var(--warning-hover);
+    border-color: var(--warning-hover);
 }
 
 .btn.small {
@@ -226,6 +267,15 @@ input[type="text"], textarea {
 input[type="text"]:focus, textarea:focus {
     outline: none;
     border-color: var(--primary);
+}
+
+:where(.btn, .tab, .theme-toggle, input[type="text"], textarea, .preset-select):focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+}
+
+input[type="checkbox"] {
+    accent-color: var(--primary);
 }
 
 textarea {
@@ -340,10 +390,10 @@ textarea {
 }
 
 .badge.missing { background: var(--surface-light); color: var(--text-muted); }
-.badge.directory { background: var(--warning); color: #0f172a; }
-.badge.symlink-ok { background: var(--success); color: #0f172a; }
-.badge.symlink-broken { background: var(--danger); color: #0f172a; }
-.badge.file { background: var(--danger); color: #0f172a; }
+.badge.directory { background: var(--warning); color: var(--warning-contrast); }
+.badge.symlink-ok { background: var(--success); color: var(--success-contrast); }
+.badge.symlink-broken { background: var(--danger); color: var(--danger-contrast); }
+.badge.file { background: var(--danger); color: var(--danger-contrast); }
 
 .actions {
     display: flex;
@@ -361,7 +411,7 @@ textarea {
 .modal {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: var(--overlay);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -738,6 +788,7 @@ textarea {
 }
 
 .app-footer a:hover {
+    color: var(--primary-hover);
     text-decoration: underline;
 }
 
@@ -776,13 +827,12 @@ body:not(.light-mode) .foot-logo-light {
     margin-top: 1rem;
     padding: 0.55rem 0.95rem;
     border-radius: 999px;
-    background: linear-gradient(180deg, #ffdb7d, #d4a05a);
-    color: #3f2e18 !important;
+    background: var(--coffee);
+    color: var(--coffee-contrast) !important;
     font-weight: 600;
     text-decoration: none;
-    border: 1px solid rgba(212, 160, 90, 0.45);
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset;
-    transition: transform 0.15s ease, filter 0.15s ease;
+    border: 1px solid var(--coffee);
+    transition: transform 0.15s ease, background 0.15s ease;
 }
 
 .coffee-btn::before {
@@ -790,12 +840,15 @@ body:not(.light-mode) .foot-logo-light {
     width: 0.7rem;
     height: 0.7rem;
     border-radius: 50% 50% 45% 45%;
-    background: #5c3a22;
-    box-shadow: 0 -0.18rem 0 0.08rem #8b5a33;
+    background: currentColor;
+    box-shadow: 0 -0.18rem 0 0.08rem currentColor;
+    opacity: 0.75;
 }
 
 .coffee-btn:hover {
-    filter: brightness(1.06);
+    background: var(--coffee-hover);
+    color: var(--coffee-contrast) !important;
+    text-decoration: none;
     transform: translateY(-1px);
 }
 
