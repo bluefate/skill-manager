@@ -283,7 +283,7 @@ function renderTargets() {
             <p class="target-status">${escapeHtml(statusDescriptions[t.state] || '')}</p>
             <p>${t.skills.length} skill(s) visible here</p>
             <div class="actions">
-                ${t.state === 'directory' ? `<button class="btn small primary" data-preview="${escapeHtml(t.id)}">Preview & Symlink</button>` : ''}
+                ${t.state === 'directory' || t.state === 'missing' ? `<button class="btn small primary" data-preview="${escapeHtml(t.id)}">${t.state === 'missing' ? 'Preview & Create Link' : 'Preview & Symlink'}</button>` : ''}
                 ${t.state === 'symlink_ok' ? `<button class="btn small danger" data-remove="${escapeHtml(t.id)}">Remove Symlink</button>` : ''}
                 ${t.can_undo ? `<button class="btn small warning" data-undo="${escapeHtml(t.id)}">Undo Symlink</button>` : ''}
                 ${!isDefaultTarget(t) ? `<button class="btn small danger" data-delete-target="${escapeHtml(t.id)}">Delete Target</button>` : ''}
@@ -315,7 +315,7 @@ function renderDefaultTargets() {
         container = document.createElement('div');
         container.id = 'default-targets';
         container.className = 'default-targets';
-        qs('#targets').insertBefore(container, qs('#targets-list'));
+        qs('#targets').insertBefore(container, qs('#targets-list-header'));
     }
 
     if (!state.defaultTargets.length) {
