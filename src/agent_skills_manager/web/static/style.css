@@ -516,6 +516,26 @@ textarea {
     font-size: 0.85rem;
 }
 
+.execution-plan {
+    max-height: 200px;
+    margin: 0 0 var(--gap);
+    padding: 0.75rem;
+    overflow: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg);
+    color: var(--primary);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.execution-plan code {
+    font: inherit;
+}
+
 .conflict {
     color: var(--warning);
 }
