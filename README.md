@@ -24,6 +24,12 @@ Devin currently discovers skills from repositories rather than a global user dir
 - **Project Skill Reviewer:** Scan any project for `.agents/skills/`, `.cursor/skills/`, `.claude/skills/`, `.codex/skills/`, and `.opencode/skills/`; review and import skills into the central hub.
 - **Web Admin UI:** Fully self-contained dashboard; no manual CLI steps needed after launching the server.
 
+## Future Work
+
+### Temporarily disable skills
+
+Add controls to disable skills without deleting them. A global disable would move a skill from the central hub into a manager-owned disabled area so every agent stops seeing it after restart. A per-agent-location disable would replace that location's full-hub symlink with an override directory containing links only to enabled skills. The interface should make overrides clear and provide a one-click return to the full central hub.
+
 ## Quick Start
 
 ### Install
