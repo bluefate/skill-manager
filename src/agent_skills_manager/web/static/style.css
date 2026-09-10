@@ -541,6 +541,14 @@ textarea {
     margin: 0.35rem 0 0.5rem;
 }
 
+.conflict-strategy-help p {
+    margin: 0 0 0.35rem;
+}
+
+.conflict-strategy-help p:last-child {
+    margin-bottom: 0;
+}
+
 .skill-preview-path {
     margin-top: 0;
 }

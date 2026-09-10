@@ -414,7 +414,11 @@ async function previewTarget(id, conflictStrategy = 'rename') {
             </div>
             <div class="form-group">
                 <label>Conflict strategy</label>
-                <p class="modal-help conflict-strategy-help"><strong>Rename</strong> keeps both skills by giving the incoming one a new name. <strong>Merge</strong> combines folders and keeps files already in the hub. <strong>Delete duplicate</strong> keeps the hub version and permanently deletes the incoming duplicate.</p>
+                <div class="modal-help conflict-strategy-help">
+                    <p><strong>Rename</strong> keeps both complete skills by giving the incoming one a new name.</p>
+                    <p><strong>Merge</strong> keeps the global skill and adds only target files that are missing from it.</p>
+                    <p><strong>Delete duplicate</strong> keeps the global skill unchanged and permanently deletes the incoming duplicate.</p>
+                </div>
                 <select id="conflict-strategy" class="preset-select">
                     <option value="rename" ${conflictStrategy === 'rename' ? 'selected' : ''}>Rename (e.g. skill -> skill_1)</option>
                     <option value="merge" ${conflictStrategy === 'merge' ? 'selected' : ''}>Merge directories</option>
