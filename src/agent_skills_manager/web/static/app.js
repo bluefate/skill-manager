@@ -298,13 +298,13 @@ async function loadTargets() {
 async function saveDefaultTargets(enabledIds) {
     await API.post('/api/targets/defaults', enabledIds);
     await loadTargets();
-    showToast('Default targets updated');
+    showToast('Known agent locations updated');
 }
 
 function renderTargets() {
     const list = qs('#targets-list');
     if (!state.targets.length) {
-        list.innerHTML = '<div class="empty">No targets configured.</div>';
+        list.innerHTML = '<div class="empty">No agent locations configured.</div>';
         return;
     }
 
@@ -332,7 +332,7 @@ function renderTargets() {
                 ${t.state === 'directory' || t.state === 'missing' ? `<button class="btn small primary" data-preview="${escapeHtml(t.id)}">${t.state === 'missing' ? 'Preview & Create Link' : 'Preview & Symlink'}</button>` : ''}
                 ${t.state === 'symlink_ok' ? `<button class="btn small danger" data-remove="${escapeHtml(t.id)}">Remove Symlink</button>` : ''}
                 ${t.can_undo ? `<button class="btn small warning" data-undo="${escapeHtml(t.id)}">Undo Symlink</button>` : ''}
-                ${!isDefaultTarget(t) ? `<button class="btn small danger" data-delete-target="${escapeHtml(t.id)}">Delete Target</button>` : ''}
+                ${!isDefaultTarget(t) ? `<button class="btn small danger" data-delete-target="${escapeHtml(t.id)}">Delete Location</button>` : ''}
             </div>
         </div>
     `}).join('');
@@ -416,16 +416,16 @@ async function previewTarget(id, conflictStrategy = 'rename') {
                 <label>Conflict strategy</label>
                 <div class="modal-help conflict-strategy-help">
                     <p><strong>Rename</strong> keeps both complete skills by giving the incoming one a new name.</p>
-                    <p><strong>Merge</strong> keeps the global skill and adds only target files that are missing from it.</p>
-                    <p><strong>Delete duplicate</strong> keeps the global skill unchanged and permanently deletes the incoming duplicate.</p>
+                    <p><strong>Merge</strong> keeps the global skill and adds only agent-location files that are missing from it.</p>
+                    <p><strong>Delete duplicate</strong> keeps the global skill unchanged and permanently deletes the duplicate from the agent location.</p>
                 </div>
                 <select id="conflict-strategy" class="preset-select">
                     <option value="rename" ${conflictStrategy === 'rename' ? 'selected' : ''}>Rename (e.g. skill -> skill_1)</option>
                     <option value="merge" ${conflictStrategy === 'merge' ? 'selected' : ''}>Merge directories</option>
-                    <option value="discard" ${conflictStrategy === 'discard' ? 'selected' : ''}>Delete duplicate from target</option>
+                    <option value="discard" ${conflictStrategy === 'discard' ? 'selected' : ''}>Delete duplicate from agent location</option>
                 </select>
             </div>
-            ${conflictStrategy === 'discard' ? `<div class="checkbox-row"><input type="checkbox" id="confirm-discard"><label for="confirm-discard">I understand the duplicate in the target will be permanently deleted.</label></div>` : ''}
+            ${conflictStrategy === 'discard' ? `<div class="checkbox-row"><input type="checkbox" id="confirm-discard"><label for="confirm-discard">I understand the duplicate in the agent location will be permanently deleted.</label></div>` : ''}
         `;
 
         qs('#conflict-strategy', body).addEventListener('change', (event) => {
@@ -440,7 +440,7 @@ async function previewTarget(id, conflictStrategy = 'rename') {
                 const moveExisting = qs('#move-existing', body).checked;
                 const conflictStrategy = qs('#conflict-strategy', body).value;
                 if (conflictStrategy === 'discard' && !qs('#confirm-discard', body).checked) {
-                    showToast('Confirm that the duplicate in the target can be deleted.', 'error');
+                    showToast('Confirm that the duplicate in the agent location can be deleted.', 'error');
                     return;
                 }
                 const result = await API.post('/api/targets/symlink', {
@@ -530,7 +530,7 @@ qs('#btn-add-target').addEventListener('click', () => {
             </select>
         </div>
         <div class="form-group">
-            <label>Target Name</label>
+            <label>Agent Name</label>
             <input type="text" name="name" placeholder="My Editor" required>
         </div>
         <div class="form-group">
@@ -548,23 +548,23 @@ qs('#btn-add-target').addEventListener('click', () => {
         pathInput.value = p.path;
     });
 
-    openModal('Add Target', form, [
+    openModal('Add Agent Location', form, [
         makeButton('Cancel', '', closeModal),
         makeButton('Add', 'primary', async () => {
             const data = Object.fromEntries(new FormData(form));
             await API.post('/api/targets', { name: data.name, path: data.path, id: data.path, state: 'missing' });
             closeModal();
             await loadTargets();
-            showToast('Target added');
+            showToast('Agent location added');
         }),
     ]);
 });
 
 async function deleteTarget(id) {
-    if (!confirm('Delete this custom target from the list?')) return;
+    if (!confirm('Delete this custom agent location from the list?')) return;
     await API.delete(`/api/targets?target_id=${encodeURIComponent(id)}`);
     await loadTargets();
-    showToast('Target deleted');
+    showToast('Agent location deleted');
 }
 
 // Projects

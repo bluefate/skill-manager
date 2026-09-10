@@ -36,7 +36,7 @@
 
     <nav class="tabs" role="tablist">
         <button class="tab active" data-tab="skills">Skill Library</button>
-        <button class="tab" data-tab="targets">Agent Targets</button>
+        <button class="tab" data-tab="targets">Agent Locations</button>
     </nav>
 
     <main class="container">
@@ -69,8 +69,8 @@
 
         <section id="targets" class="panel">
             <div class="panel-header">
-                <h2>Agent Targets</h2>
-                <button id="btn-add-target" class="btn primary">Add Target</button>
+                <h2>Agent Locations</h2>
+                <button id="btn-add-target" class="btn primary">Add Location</button>
             </div>
             <div class="hub-location">
                 <div class="hub-location-heading">
@@ -80,16 +80,16 @@
                     </div>
                     <span class="badge hub-badge">{{ "custom path" if hub_is_custom else "default path" }}</span>
                 </div>
-                <p>This is the source directory every symlinked agent target reads from. The default is created automatically; set <code>--skills-dir</code> only when you want to store the hub somewhere else.</p>
+                <p>This is the source directory every symlinked agent location reads from. The default is created automatically; set <code>--skills-dir</code> only when you want to store the hub somewhere else.</p>
             </div>
             <div class="info-box">
                 Symlink agent-specific skill directories to the central hub. Preview first to safely move any existing skills.
                 <strong>After creating or removing a symlink, restart that agent/editor.</strong>
             </div>
-            <div class="capability-grid" aria-label="Agent Targets capabilities">
+            <div class="capability-grid" aria-label="Agent Locations capabilities">
                 <article class="capability-card">
                     <h3>Choose locations</h3>
-                    <p>Enable known agent paths or add a custom target for another editor or tool.</p>
+                    <p>Enable known agent paths or add a custom location for another editor or tool.</p>
                 </article>
                 <article class="capability-card">
                     <h3>Understand status</h3>
@@ -97,11 +97,11 @@
                 </article>
                 <article class="capability-card">
                     <h3>Link safely</h3>
-                    <p><strong>Preview &amp; Symlink</strong> shows file moves and conflicts before making changes. Linked targets can later be removed or undone.</p>
+                    <p><strong>Preview &amp; Symlink</strong> shows file moves and conflicts before making changes. Linked locations can later be removed or undone.</p>
                 </article>
             </div>
             <div id="targets-list-header" class="list-section-header">
-                <h3>Configured agent targets</h3>
+                <h3>Configured agent locations</h3>
                 <p><strong>Missing</strong> means the agent’s expected skills path does not exist yet. Use <strong>Preview &amp; Create Link</strong> to review the operation and create that path as a link to the central hub.</p>
             </div>
             <div id="targets-list" class="card-list targets-grid"></div>

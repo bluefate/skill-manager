@@ -19,8 +19,8 @@ Devin currently discovers skills from repositories rather than a global user dir
 ## Features
 
 - **Central Skills Hub:** Manage everything from `~/.agents/skills/`.
-- **Agent Target Management:** Built-in targets for Cursor, Claude, Codex, and OpenCode; add custom targets dynamically.
-- **Safe Symlink Workflow:** Preview target directories, move existing skills into the hub, then create or remove symlinks with clear conflict handling. Undo a symlink later to restore the original directory.
+- **Agent Location Management:** Built-in locations for Cursor, Claude, Codex, and OpenCode; add custom locations dynamically.
+- **Safe Symlink Workflow:** Preview agent skill locations, move existing skills into the hub, then create or remove symlinks with clear conflict handling. Undo a symlink later to restore the original directory.
 - **Project Skill Reviewer:** Scan any project for `.agents/skills/`, `.cursor/skills/`, `.claude/skills/`, `.codex/skills/`, and `.opencode/skills/`; review and import skills into the central hub.
 - **Web Admin UI:** Fully self-contained dashboard; no manual CLI steps needed after launching the server.
 
@@ -46,7 +46,7 @@ pip install -e ".[dev]"
 agent-skills-manager run
 ```
 
-Open <http://127.0.0.1:8000> for the home page, then click **Open Dashboard** or go directly to <http://127.0.0.1:8000/app> to manage skills and targets.
+Open <http://127.0.0.1:8000> for the home page, then click **Open Dashboard** or go directly to <http://127.0.0.1:8000/app> to manage skills and agent locations.
 
 ### Update or Refresh the App
 
