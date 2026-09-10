@@ -27,7 +27,7 @@ def test_dashboard(client: TestClient) -> None:
     response = client.get("/app")
     assert response.status_code == 200
     assert "Agent Skills Manager" in response.text
-    assert "Central Skills" in response.text
+    assert "Skill Library" in response.text
     assert "Central hub location" in response.text
     assert "custom path" in response.text
     assert "/hub" in response.text
@@ -60,6 +60,10 @@ def test_skills_crud(client: TestClient) -> None:
     response = client.get("/api/skills/test-skill")
     assert response.status_code == 200
     assert response.json()["description"] == "A test skill"
+
+    response = client.get("/api/skills/test-skill/content")
+    assert response.status_code == 200
+    assert "name: test-skill" in response.json()["content"]
 
     response = client.delete("/api/skills/test-skill")
     assert response.status_code == 200

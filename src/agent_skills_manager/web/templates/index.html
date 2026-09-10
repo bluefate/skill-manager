@@ -25,7 +25,7 @@
             <img src="/static/logo.svg" alt="" class="app-logo" width="32" height="32">
         </a>
         <h1>{{ app_title }}</h1>
-        <span class="version">v{{ app_version }}</span>
+        <span class="version" data-current-version="{{ app_version }}">v{{ app_version }}</span>
         <nav class="header-links">
             <a href="/" class="btn small">Home</a>
             <button id="theme-toggle" class="theme-toggle" aria-label="Toggle light/dark mode">
@@ -35,22 +35,21 @@
     </header>
 
     <nav class="tabs" role="tablist">
-        <button class="tab active" data-tab="skills">Central Skills</button>
-        <button class="tab" data-tab="targets">Agent Targets</button>
-        <button class="tab" data-tab="projects">Project Reviewer</button>
+        <button class="tab active" data-tab="skills">Skill Library</button>
+        <button class="tab" data-tab="targets">Agent Locations</button>
     </nav>
 
     <main class="container">
         <section id="skills" class="panel active">
             <div class="panel-header">
-                <h2>Central Skills</h2>
-                <button id="btn-add-skill" class="btn primary">Add Skill</button>
+                <h2>Skill Library</h2>
+                <button id="btn-add-skill" class="btn primary" title="Create a new skill in the central hub">Add Skill</button>
             </div>
             <div class="info-box">
-                All skills live in <code>~/.agents/skills/</code>. Changes here are reflected in every symlinked agent directory.
+                <strong>Add Skill</strong> creates a new skill folder and its <code>SKILL.md</code> metadata file in <code>~/.agents/skills/</code>. Changes here are reflected in every symlinked agent directory.
                 <strong>After adding or editing a skill, restart your agent/editor so it reloads its skill list.</strong>
             </div>
-            <div class="capability-grid" aria-label="Central Skills capabilities">
+            <div class="capability-grid" aria-label="Skill Library capabilities">
                 <article class="capability-card">
                     <h3>Add and maintain</h3>
                     <p>Create a skill with a name, description, and tags. Edit its metadata later or remove skills you no longer use.</p>
@@ -70,8 +69,8 @@
 
         <section id="targets" class="panel">
             <div class="panel-header">
-                <h2>Agent Targets</h2>
-                <button id="btn-add-target" class="btn primary">Add Target</button>
+                <h2>Agent Locations</h2>
+                <button id="btn-add-target" class="btn primary">Add Location</button>
             </div>
             <div class="hub-location">
                 <div class="hub-location-heading">
@@ -81,16 +80,16 @@
                     </div>
                     <span class="badge hub-badge">{{ "custom path" if hub_is_custom else "default path" }}</span>
                 </div>
-                <p>This is the source directory every symlinked agent target reads from. The default is created automatically; set <code>--skills-dir</code> only when you want to store the hub somewhere else.</p>
+                <p>This is the source directory every symlinked agent location reads from. The default is created automatically; set <code>--skills-dir</code> only when you want to store the hub somewhere else.</p>
             </div>
             <div class="info-box">
                 Symlink agent-specific skill directories to the central hub. Preview first to safely move any existing skills.
                 <strong>After creating or removing a symlink, restart that agent/editor.</strong>
             </div>
-            <div class="capability-grid" aria-label="Agent Targets capabilities">
+            <div class="capability-grid" aria-label="Agent Locations capabilities">
                 <article class="capability-card">
                     <h3>Choose locations</h3>
-                    <p>Enable known agent paths or add a custom target for another editor or tool.</p>
+                    <p>Enable known agent paths or add a custom location for another editor or tool.</p>
                 </article>
                 <article class="capability-card">
                     <h3>Understand status</h3>
@@ -98,17 +97,17 @@
                 </article>
                 <article class="capability-card">
                     <h3>Link safely</h3>
-                    <p><strong>Preview &amp; Symlink</strong> shows file moves and conflicts before making changes. Linked targets can later be removed or undone.</p>
+                    <p><strong>Preview &amp; Symlink</strong> shows file moves and conflicts before making changes. Linked locations can later be removed or undone.</p>
                 </article>
             </div>
             <div id="targets-list-header" class="list-section-header">
-                <h3>Configured agent targets</h3>
+                <h3>Configured agent locations</h3>
                 <p><strong>Missing</strong> means the agent’s expected skills path does not exist yet. Use <strong>Preview &amp; Create Link</strong> to review the operation and create that path as a link to the central hub.</p>
             </div>
             <div id="targets-list" class="card-list targets-grid"></div>
         </section>
 
-        <section id="projects" class="panel">
+        <section id="projects" class="panel project-reviewer">
             <div class="panel-header">
                 <h2>Project Reviewer</h2>
             </div>
@@ -167,6 +166,8 @@
 
     <div id="toast" class="toast hidden"></div>
 
+    <script src="/static/marked.umd.js"></script>
+    <script src="/static/purify.min.js"></script>
     <script src="/static/app.js"></script>
 </body>
 </html>

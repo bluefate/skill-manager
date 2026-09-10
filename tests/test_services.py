@@ -76,6 +76,13 @@ def test_plan_move_to_hub_no_conflict(tmp_path: Path) -> None:
     assert plan.operations[0].destination == hub / "shared"
 
 
+def test_list_skills_hides_codex_system_container(tmp_path: Path) -> None:
+    write_skill_metadata(tmp_path / ".system" / "internal", "Internal", "", [])
+    write_skill_metadata(tmp_path / "visible", "Visible", "", [])
+
+    assert [skill.name for skill in list_skills(tmp_path)] == ["Visible"]
+
+
 def test_plan_move_to_hub_rename_conflict(tmp_path: Path) -> None:
     source = tmp_path / "source"
     hub = tmp_path / "hub"
@@ -86,6 +93,19 @@ def test_plan_move_to_hub_rename_conflict(tmp_path: Path) -> None:
     assert len(plan.operations) == 1
     assert plan.operations[0].action == "rename"
     assert plan.operations[0].destination.name == "shared_1"
+
+
+def test_plan_move_to_hub_discard_conflict(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    hub = tmp_path / "hub"
+    (source / "same").mkdir(parents=True)
+    (hub / "same").mkdir(parents=True)
+
+    plan = plan_move_to_hub(source, hub, conflict_strategy="discard")
+
+    assert len(plan.operations) == 1
+    assert plan.operations[0].action == "discard"
+    assert plan.operations[0].destination == hub / "same"
 
 
 def test_create_symlink_moves_existing_skills(tmp_path: Path) -> None:
@@ -100,6 +120,20 @@ def test_create_symlink_moves_existing_skills(tmp_path: Path) -> None:
     assert result["status"] == "ok"
     assert target_path.is_symlink()
     assert (hub / "cursor-skill").exists()
+
+
+def test_create_symlink_discards_target_duplicate(tmp_path: Path) -> None:
+    hub = tmp_path / "hub"
+    target_path = tmp_path / "target" / "skills"
+    write_skill_metadata(hub / "shared", "Shared", "From hub", [])
+    write_skill_metadata(target_path / "shared", "Shared", "From target", [])
+
+    target = inspect_target(AgentTarget(id=str(target_path), name="Target", path=target_path), hub)
+    result = create_symlink(target, hub, move_existing=True, conflict_strategy="discard")
+
+    assert result["status"] == "ok"
+    assert target_path.is_symlink()
+    assert "From hub" in (hub / "shared" / "SKILL.md").read_text(encoding="utf-8")
 
 
 def test_remove_symlink_restores_directory(tmp_path: Path) -> None:

@@ -22,7 +22,7 @@
     <header class="app-header">
         <img src="/static/logo.svg" alt="" class="app-logo" width="32" height="32">
         <h1>{{ app_title }}</h1>
-        <span class="version">v{{ app_version }}</span>
+        <span class="version" data-current-version="{{ app_version }}">v{{ app_version }}</span>
         <button id="theme-toggle" class="theme-toggle" aria-label="Toggle light/dark mode">
             <span id="theme-label">Dark</span>
         </button>
@@ -46,7 +46,7 @@
                 <p>Store every skill in <code>~/.agents/skills/</code> with metadata, tags, and descriptions.</p>
             </div>
             <div class="card">
-                <h3>Agent Target Symlinks</h3>
+                <h3>Agent Location Symlinks</h3>
                 <p>Preview, move, and symlink directories for Cursor, Claude, Codex, OpenCode, and custom agents.</p>
             </div>
             <div class="card">

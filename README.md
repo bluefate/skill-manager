@@ -19,10 +19,16 @@ Devin currently discovers skills from repositories rather than a global user dir
 ## Features
 
 - **Central Skills Hub:** Manage everything from `~/.agents/skills/`.
-- **Agent Target Management:** Built-in targets for Cursor, Claude, Codex, and OpenCode; add custom targets dynamically.
-- **Safe Symlink Workflow:** Preview target directories, move existing skills into the hub, then create or remove symlinks with clear conflict handling. Undo a symlink later to restore the original directory.
+- **Agent Location Management:** Built-in locations for Cursor, Claude, Codex, and OpenCode; add custom locations dynamically.
+- **Safe Symlink Workflow:** Preview agent skill locations, move existing skills into the hub, then create or remove symlinks with clear conflict handling. Undo a symlink later to restore the original directory.
 - **Project Skill Reviewer:** Scan any project for `.agents/skills/`, `.cursor/skills/`, `.claude/skills/`, `.codex/skills/`, and `.opencode/skills/`; review and import skills into the central hub.
 - **Web Admin UI:** Fully self-contained dashboard; no manual CLI steps needed after launching the server.
+
+## Future Work
+
+### Temporarily disable skills
+
+Add controls to disable skills without deleting them. A global disable would move a skill from the central hub into a manager-owned disabled area so every agent stops seeing it after restart. A per-agent-location disable would replace that location's full-hub symlink with an override directory containing links only to enabled skills. The interface should make overrides clear and provide a one-click return to the full central hub.
 
 ## Quick Start
 
@@ -46,7 +52,7 @@ pip install -e ".[dev]"
 agent-skills-manager run
 ```
 
-Open <http://127.0.0.1:8000> for the home page, then click **Open Dashboard** or go directly to <http://127.0.0.1:8000/app> to manage skills and targets.
+Open <http://127.0.0.1:8000> for the home page, then click **Open Dashboard** or go directly to <http://127.0.0.1:8000/app> to manage skills and agent locations.
 
 ### Update or Refresh the App
 
@@ -116,6 +122,8 @@ Creating symlinks on Windows typically requires **Developer Mode** or an elevate
 ## License
 
 Copyright &copy; 2026 BlueFate Labs. Agent Skills Manager is released under the **MIT License**, a permissive, free/open-source license. See [LICENSE](LICENSE) for the full text.
+
+The bundled Markdown preview uses [Marked](src/agent_skills_manager/web/static/MARKED-LICENSE.txt), licensed under MIT, and [DOMPurify](src/agent_skills_manager/web/static/DOMPURIFY-LICENSE.txt), licensed under Apache-2.0 or MPL-2.0.
 
 ## Logo / Assets
 

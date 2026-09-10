@@ -2,9 +2,15 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
+import re
 import shutil
+import time
 from pathlib import Path
+from typing import Any
+from urllib.error import URLError
+from urllib.request import Request as UrlRequest, urlopen
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, Query
@@ -28,6 +34,7 @@ from agent_skills_manager.services.skills import (
     delete_skill,
     list_skills,
     read_skill,
+    read_skill_content,
     rename_skill,
     write_skill_metadata,
 )
@@ -108,6 +115,29 @@ def _get_all_targets(settings: Settings) -> list[AgentTarget]:
     return targets
 
 
+GITHUB_RELEASE_URL = "https://api.github.com/repos/bluefate/skill-manager/releases/latest"
+UPDATE_CACHE_SECONDS = 3600
+
+
+def _version_key(value: str) -> tuple[int, ...] | None:
+    match = re.fullmatch(r"v?(\d+(?:\.\d+)*)", value.strip())
+    return tuple(int(part) for part in match.group(1).split(".")) if match else None
+
+
+def _fetch_latest_release() -> dict[str, str] | None:
+    request = UrlRequest(GITHUB_RELEASE_URL, headers={"Accept": "application/vnd.github+json"})
+    try:
+        with urlopen(request, timeout=2) as response:  # noqa: S310 - fixed GitHub API URL
+            payload = json.load(response)
+    except (OSError, URLError, json.JSONDecodeError):
+        return None
+    tag_name = payload.get("tag_name")
+    html_url = payload.get("html_url")
+    if not isinstance(tag_name, str) or not isinstance(html_url, str):
+        return None
+    return {"version": tag_name, "url": html_url}
+
+
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or get_settings()
     settings.ensure_dirs()
@@ -121,6 +151,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     templates_dir = Path(__file__).parent / "web" / "templates"
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
     templates = Jinja2Templates(directory=templates_dir)
+    update_cache: dict[str, Any] = {"checked_at": 0.0, "release": None}
 
     @app.get("/apple-touch-icon.png", include_in_schema=False)
     @app.get("/apple-touch-icon-precomposed.png", include_in_schema=False)
@@ -153,6 +184,22 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             },
         )
 
+    @app.get("/api/updates/latest")
+    async def get_latest_update() -> dict[str, str | bool]:
+        now = time.monotonic()
+        if now - update_cache["checked_at"] >= UPDATE_CACHE_SECONDS:
+            update_cache["release"] = await asyncio.to_thread(_fetch_latest_release)
+            update_cache["checked_at"] = now
+
+        release = update_cache["release"]
+        if release is None:
+            return {"available": False}
+
+        current_key = _version_key(settings.app_version)
+        latest_key = _version_key(release["version"])
+        available = current_key is not None and latest_key is not None and latest_key > current_key
+        return {"available": available, "version": release["version"], "url": release["url"]}
+
     @app.get("/api/skills", response_model=list[Skill])
     async def get_skills() -> list[Skill]:
         return list_skills(settings.skills_dir, source="central")
@@ -164,6 +211,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         if skill is None:
             raise HTTPException(status_code=404, detail="Skill not found")
         return skill
+
+    @app.get("/api/skills/{skill_name}/content")
+    async def get_skill_content(skill_name: str) -> dict[str, str]:
+        skill_path = settings.skills_dir / skill_name
+        content = read_skill_content(skill_path)
+        if content is None:
+            raise HTTPException(status_code=404, detail="Skill text not found")
+        return {"content": content}
 
     @app.post("/api/skills", response_model=Skill)
     async def create_or_update_skill(skill: Skill) -> Skill:

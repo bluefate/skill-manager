@@ -62,6 +62,8 @@ def list_skills(directory: Path, source: str = "") -> list[Skill]:
         return []
     skills: list[Skill] = []
     for entry in sorted(directory.iterdir()):
+        if entry.name == ".system":
+            continue
         if entry.is_dir() or entry.is_symlink():
             skills.append(_build_skill_from_dir(entry, source=source))
     return skills
@@ -72,6 +74,17 @@ def read_skill(path: Path) -> Skill | None:
     if not path.exists() or not (path.is_dir() or path.is_symlink()):
         return None
     return _build_skill_from_dir(path)
+
+
+def read_skill_content(path: Path) -> str | None:
+    """Return a skill's source text when its SKILL.md file is available."""
+    skill_file = path / SKILL_FILE_NAME
+    if not skill_file.is_file():
+        return None
+    try:
+        return skill_file.read_text(encoding="utf-8")
+    except OSError:
+        return None
 
 
 def write_skill_metadata(path: Path, name: str, description: str, tags: list[str]) -> Skill:
@@ -134,6 +147,11 @@ def plan_move_to_hub(
                     MoveOperation(source=entry, destination=dest, action="skip")
                 )
                 continue
+            if conflict_strategy == "discard":
+                plan.operations.append(
+                    MoveOperation(source=entry, destination=dest, action="discard")
+                )
+                continue
             if conflict_strategy == "merge":
                 plan.operations.append(
                     MoveOperation(source=entry, destination=dest, action="merge")
@@ -163,6 +181,12 @@ def execute_move_plan(plan: MovePlan) -> list[Path]:
     moved: list[Path] = []
     for op in plan.operations:
         if op.action == "skip":
+            continue
+        if op.action == "discard":
+            if op.source.is_dir() and not op.source.is_symlink():
+                shutil.rmtree(op.source)
+            else:
+                op.source.unlink(missing_ok=True)
             continue
         if op.action in ("move", "rename"):
             shutil.move(str(op.source), str(op.destination))

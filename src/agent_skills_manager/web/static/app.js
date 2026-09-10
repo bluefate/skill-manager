@@ -58,6 +58,27 @@ qs('#theme-toggle').addEventListener('click', () => {
 // Restore saved theme on load
 applyTheme(localStorage.getItem('asm-theme') === 'light');
 
+async function checkForUpdate() {
+    const version = qs('.version');
+    if (!version) return;
+    try {
+        const update = await API.get('/api/updates/latest');
+        if (!update.available) return;
+        const link = document.createElement('a');
+        link.href = update.url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.className = 'update-link';
+        link.textContent = `Update available: ${update.version}`;
+        version.append(' ');
+        version.appendChild(link);
+    } catch (_) {
+        // The app remains fully local when GitHub is unavailable.
+    }
+}
+
+checkForUpdate();
+
 function showToast(message, type = 'success') {
     toast.textContent = message;
     toast.className = `toast ${type}`;
@@ -135,6 +156,7 @@ function renderSkills() {
             <div class="card-tags">${s.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>
             <div class="actions">
                 <button class="btn small" data-edit="${escapeHtml(s.name)}">Edit</button>
+                <button class="btn small" data-preview-skill="${escapeHtml(s.name)}">Preview</button>
                 <button class="btn small danger" data-delete="${escapeHtml(s.name)}">Delete</button>
             </div>
         </div>
@@ -143,9 +165,33 @@ function renderSkills() {
     qsa('[data-edit]', list).forEach(btn => {
         btn.addEventListener('click', () => editSkill(btn.dataset.edit));
     });
+    qsa('[data-preview-skill]', list).forEach(btn => {
+        btn.addEventListener('click', () => previewSkill(btn.dataset.previewSkill));
+    });
     qsa('[data-delete]', list).forEach(btn => {
         btn.addEventListener('click', () => deleteSkill(btn.dataset.delete));
     });
+}
+
+async function previewSkill(name) {
+    try {
+        const { content } = await API.get(`/api/skills/${encodeURIComponent(name)}/content`);
+        const body = document.createElement('div');
+        body.innerHTML = `<p class="skill-preview-path"><code>~/.agents/skills/${escapeHtml(name)}/SKILL.md</code></p>`;
+        const frontmatterEnd = content.startsWith('---\n') ? content.indexOf('\n---', 4) : -1;
+        const markdown = frontmatterEnd >= 0 ? content.slice(frontmatterEnd + 4).trim() : content;
+        const preview = document.createElement('div');
+        preview.className = 'markdown-preview';
+        if (window.marked && window.DOMPurify) {
+            preview.innerHTML = DOMPurify.sanitize(marked.parse(markdown, { gfm: true }));
+        } else {
+            preview.textContent = markdown;
+        }
+        body.appendChild(preview);
+        openModal(`Preview: ${name}`, body, [makeButton('Close', 'primary', closeModal)]);
+    } catch (err) {
+        showToast(err.message, 'error');
+    }
 }
 
 qs('#skill-filter').addEventListener('input', renderSkills);
@@ -252,13 +298,13 @@ async function loadTargets() {
 async function saveDefaultTargets(enabledIds) {
     await API.post('/api/targets/defaults', enabledIds);
     await loadTargets();
-    showToast('Default targets updated');
+    showToast('Known agent locations updated');
 }
 
 function renderTargets() {
     const list = qs('#targets-list');
     if (!state.targets.length) {
-        list.innerHTML = '<div class="empty">No targets configured.</div>';
+        list.innerHTML = '<div class="empty">No agent locations configured.</div>';
         return;
     }
 
@@ -286,7 +332,7 @@ function renderTargets() {
                 ${t.state === 'directory' || t.state === 'missing' ? `<button class="btn small primary" data-preview="${escapeHtml(t.id)}">${t.state === 'missing' ? 'Preview & Create Link' : 'Preview & Symlink'}</button>` : ''}
                 ${t.state === 'symlink_ok' ? `<button class="btn small danger" data-remove="${escapeHtml(t.id)}">Remove Symlink</button>` : ''}
                 ${t.can_undo ? `<button class="btn small warning" data-undo="${escapeHtml(t.id)}">Undo Symlink</button>` : ''}
-                ${!isDefaultTarget(t) ? `<button class="btn small danger" data-delete-target="${escapeHtml(t.id)}">Delete Target</button>` : ''}
+                ${!isDefaultTarget(t) ? `<button class="btn small danger" data-delete-target="${escapeHtml(t.id)}">Delete Location</button>` : ''}
             </div>
         </div>
     `}).join('');
@@ -345,9 +391,9 @@ function renderDefaultTargets() {
     });
 }
 
-async function previewTarget(id) {
+async function previewTarget(id, conflictStrategy = 'rename') {
     try {
-        const preview = await API.get(`/api/targets/preview?target_id=${encodeURIComponent(id)}&move_existing=true&conflict_strategy=rename`);
+        const preview = await API.get(`/api/targets/preview?target_id=${encodeURIComponent(id)}&move_existing=true&conflict_strategy=${encodeURIComponent(conflictStrategy)}`);
         const target = preview.target;
         const listItems = preview.existing_skills.map(s =>
             `<li>${escapeHtml(s.name)}${s.description ? ` - ${escapeHtml(s.description)}` : ''}</li>`
@@ -361,28 +407,47 @@ async function previewTarget(id) {
             <p>${escapeHtml(preview.message)}</p>
             ${operations ? `<h4>Execution plan</h4><pre class="execution-plan"><code>${operations}</code></pre>` : ''}
             ${listItems ? `<h4>Existing skills (${preview.existing_skills.length})</h4><ul class="preview-list">${listItems}</ul>` : ''}
-            ${conflicts ? `<h4>Conflicts</h4><ul class="preview-list">${conflicts}</ul>` : ''}
-            <div class="checkbox-row">
-                <input type="checkbox" id="move-existing" checked>
-                <label for="move-existing">Move existing skills into central hub</label>
-            </div>
-            <div class="form-group">
-                <label>Conflict strategy</label>
-                <select id="conflict-strategy">
-                    <option value="rename">Rename (e.g. skill -> skill_1)</option>
-                    <option value="skip">Skip conflicts</option>
-                    <option value="merge">Merge directories</option>
-                </select>
-            </div>
+            ${conflicts ? `<h4>Conflicts</h4><p class="modal-help">A conflict means a skill with the same name already exists in the central hub. Choose how to keep both versions below.</p><ul class="preview-list">${conflicts}</ul>` : ''}
+            ${preview.existing_skills.length ? `
+                <div class="checkbox-row">
+                    <input type="checkbox" id="move-existing" checked>
+                    <label for="move-existing">Move existing skills into central hub</label>
+                </div>
+                <div class="form-group">
+                    <label>Conflict strategy</label>
+                    <div class="modal-help conflict-strategy-help">
+                        <p><strong>Rename</strong> keeps both complete skills by giving the incoming one a new name.</p>
+                        <p><strong>Merge</strong> keeps the global skill and adds only agent-location files that are missing from it.</p>
+                        <p><strong>Delete duplicate</strong> keeps the global skill unchanged and permanently deletes the duplicate from the agent location.</p>
+                    </div>
+                    <select id="conflict-strategy" class="preset-select">
+                        <option value="rename" ${conflictStrategy === 'rename' ? 'selected' : ''}>Rename (e.g. skill -> skill_1)</option>
+                        <option value="merge" ${conflictStrategy === 'merge' ? 'selected' : ''}>Merge directories</option>
+                        <option value="discard" ${conflictStrategy === 'discard' ? 'selected' : ''}>Delete duplicate from agent location</option>
+                    </select>
+                </div>
+                ${conflictStrategy === 'discard' ? `<div class="checkbox-row"><input type="checkbox" id="confirm-discard"><label for="confirm-discard">I understand the duplicate in the agent location will be permanently deleted.</label></div>` : ''}
+            ` : ''}
         `;
+
+        const conflictSelect = qs('#conflict-strategy', body);
+        if (conflictSelect) {
+            conflictSelect.addEventListener('change', (event) => {
+                previewTarget(id, event.target.value);
+            });
+        }
 
         const actions = [
             makeButton('Cancel', '', closeModal),
         ];
         if (preview.can_symlink) {
             actions.push(makeButton('Create Symlink', 'primary', async () => {
-                const moveExisting = qs('#move-existing', body).checked;
-                const conflictStrategy = qs('#conflict-strategy', body).value;
+                const moveExisting = qs('#move-existing', body)?.checked ?? false;
+                const conflictStrategy = qs('#conflict-strategy', body)?.value ?? 'rename';
+                if (conflictStrategy === 'discard' && !qs('#confirm-discard', body)?.checked) {
+                    showToast('Confirm that the duplicate in the agent location can be deleted.', 'error');
+                    return;
+                }
                 const result = await API.post('/api/targets/symlink', {
                     target_id: id,
                     move_existing: moveExisting,
@@ -470,7 +535,7 @@ qs('#btn-add-target').addEventListener('click', () => {
             </select>
         </div>
         <div class="form-group">
-            <label>Target Name</label>
+            <label>Agent Name</label>
             <input type="text" name="name" placeholder="My Editor" required>
         </div>
         <div class="form-group">
@@ -488,23 +553,23 @@ qs('#btn-add-target').addEventListener('click', () => {
         pathInput.value = p.path;
     });
 
-    openModal('Add Target', form, [
+    openModal('Add Agent Location', form, [
         makeButton('Cancel', '', closeModal),
         makeButton('Add', 'primary', async () => {
             const data = Object.fromEntries(new FormData(form));
             await API.post('/api/targets', { name: data.name, path: data.path, id: data.path, state: 'missing' });
             closeModal();
             await loadTargets();
-            showToast('Target added');
+            showToast('Agent location added');
         }),
     ]);
 });
 
 async function deleteTarget(id) {
-    if (!confirm('Delete this custom target from the list?')) return;
+    if (!confirm('Delete this custom agent location from the list?')) return;
     await API.delete(`/api/targets?target_id=${encodeURIComponent(id)}`);
     await loadTargets();
-    showToast('Target deleted');
+    showToast('Agent location deleted');
 }
 
 // Projects
