@@ -321,7 +321,8 @@ function renderDefaultTargets() {
                 ${state.defaultTargets.map(t => `
                     <label class="checkbox-row">
                         <input type="checkbox" value="${escapeHtml(t.id)}" ${state.enabledDefaults.includes(t.id) ? 'checked' : ''}>
-                        <span>${escapeHtml(t.name)} <code>${escapeHtml(t.path)}</code></span>
+                        <span class="default-target-name">${escapeHtml(t.name)}</span>
+                        <code class="default-target-path">${escapeHtml(t.path)}</code>
                     </label>
                 `).join('')}
             </div>

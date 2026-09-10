@@ -232,6 +232,47 @@ textarea {
     gap: var(--gap);
 }
 
+.skills-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: var(--gap);
+}
+
+.skills-grid .card {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+}
+
+.skills-grid .card-title {
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.skills-grid .card-meta {
+    overflow-wrap: anywhere;
+}
+
+.skills-grid .actions {
+    margin-top: auto;
+    padding-top: 0.75rem;
+}
+
+.skills-grid .empty {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 900px) {
+    .skills-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .skills-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -436,16 +477,36 @@ textarea {
 
 .default-targets-list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: 1fr;
     gap: 0.5rem;
     margin: 0.75rem 0;
 }
 
 .default-targets-list .checkbox-row {
+    display: grid;
+    grid-template-columns: auto minmax(8rem, 0.35fr) minmax(0, 1fr);
+    align-items: center;
     margin-bottom: 0;
-    padding: 0.35rem 0.5rem;
+    padding: 0.5rem 0.75rem;
     background: var(--bg);
     border-radius: var(--radius);
+}
+
+.default-target-name {
+    font-weight: 500;
+}
+
+.default-target-path {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+    .default-targets-list .checkbox-row {
+        grid-template-columns: auto minmax(5rem, auto) minmax(0, 1fr);
+    }
 }
 
 .preset-select {
