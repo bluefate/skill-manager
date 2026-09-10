@@ -45,6 +45,29 @@ agent-skills-manager run
 
 Open <http://127.0.0.1:8000> for the home page, then click **Open Dashboard** or go directly to <http://127.0.0.1:8000/app> to manage skills and targets.
 
+### Update or Refresh the App
+
+If the app is already running, stop the server with `Ctrl+C`, start it again, and hard-refresh the dashboard in your browser (`Cmd+Shift+R` on macOS or `Ctrl+Shift+R` on Windows and Linux).
+
+For an editable installation from this repository, update the checkout and refresh the installation before restarting the server:
+
+```bash
+cd /path/to/skill-manager
+git switch main
+git pull
+.venv/bin/pip install -e ".[dev]"
+.venv/bin/agent-skills-manager run
+```
+
+When you are testing changes from another branch, switch to that branch instead of `main`. Editable installs usually pick up source and UI changes immediately, but restarting the server ensures the running process reloads them.
+
+For an installation from PyPI, upgrade the package and restart the app:
+
+```bash
+pip install --upgrade agent-skills-manager
+agent-skills-manager run
+```
+
 ### Custom Options
 
 ```bash
