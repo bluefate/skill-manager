@@ -6,13 +6,15 @@ A small, open-source web application that helps you maintain **one canonical dir
 
 Different agents and editors expect skills in different places:
 
+- `~/.agents/skills/` (the global, canonical hub used by this app)
 - `~/.cursor/skills/`
 - `~/.claude/skills/`
 - `~/.codex/skills/`
-- `~/.devin/skills/`
 - `~/.config/opencode/skills/`
 
 This tool keeps all your skills in `~/.agents/skills/` and lets you safely preview, move, and symlink those other locations so every editor reads from the same source.
+
+Devin currently discovers skills from repositories rather than a global user directory. Its recommended path is `<repository>/.agents/skills/<skill-name>/SKILL.md`; global and organization-level skills are not currently supported. See the [Devin Skills documentation](https://docs.devin.ai/product-guides/skills) for its complete list of supported repository paths.
 
 ## Features
 
