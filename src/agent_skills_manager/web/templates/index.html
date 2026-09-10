@@ -73,6 +73,16 @@
                 <h2>Agent Targets</h2>
                 <button id="btn-add-target" class="btn primary">Add Target</button>
             </div>
+            <div class="hub-location">
+                <div class="hub-location-heading">
+                    <div>
+                        <span class="eyebrow">Central hub location</span>
+                        <code>{{ hub_path }}</code>
+                    </div>
+                    <span class="badge hub-badge">{{ "custom path" if hub_is_custom else "default path" }}</span>
+                </div>
+                <p>This is the source directory every symlinked agent target reads from. The default is created automatically; set <code>--skills-dir</code> only when you want to store the hub somewhere else.</p>
+            </div>
             <div class="info-box">
                 Symlink agent-specific skill directories to the central hub. Preview first to safely move any existing skills.
                 <strong>After creating or removing a symlink, restart that agent/editor.</strong>

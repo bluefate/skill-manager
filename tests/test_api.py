@@ -28,6 +28,9 @@ def test_dashboard(client: TestClient) -> None:
     assert response.status_code == 200
     assert "Agent Skills Manager" in response.text
     assert "Central Skills" in response.text
+    assert "Central hub location" in response.text
+    assert "custom path" in response.text
+    assert "/hub" in response.text
 
 
 @pytest.mark.parametrize("path", ["/apple-touch-icon.png", "/apple-touch-icon-precomposed.png"])

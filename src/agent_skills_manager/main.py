@@ -140,12 +140,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.get("/app", response_class=HTMLResponse)
     async def dashboard(request: Request) -> HTMLResponse:
+        hub_path = settings.skills_dir.expanduser().resolve()
+        default_hub_path = (Path.home() / ".agents" / "skills").resolve()
         return templates.TemplateResponse(
             request,
             "index.html",
             {
                 "app_title": settings.app_title,
                 "app_version": settings.app_version,
+                "hub_path": str(hub_path),
+                "hub_is_custom": hub_path != default_hub_path,
             },
         )
 

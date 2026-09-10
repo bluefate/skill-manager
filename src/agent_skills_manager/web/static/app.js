@@ -262,6 +262,14 @@ function renderTargets() {
         return;
     }
 
+    const statusDescriptions = {
+        missing: 'This agent skills directory has not been created yet.',
+        directory: 'An independent skills directory exists at this location.',
+        symlink_ok: 'This location is linked to the central hub.',
+        symlink_broken: 'This symlink points to a location that is no longer available.',
+        file: 'A file exists where the agent skills directory should be.',
+    };
+
     list.innerHTML = state.targets.map(t => {
         const stateClass = t.state.replace('_', '-');
         return `
@@ -272,6 +280,7 @@ function renderTargets() {
             </div>
             <div class="card-meta">${escapeHtml(t.path)}</div>
             ${t.resolved_path ? `<div class="card-meta">-> ${escapeHtml(t.resolved_path)}</div>` : ''}
+            <p class="target-status">${escapeHtml(statusDescriptions[t.state] || '')}</p>
             <p>${t.skills.length} skill(s) visible here</p>
             <div class="actions">
                 ${t.state === 'directory' ? `<button class="btn small primary" data-preview="${escapeHtml(t.id)}">Preview & Symlink</button>` : ''}
