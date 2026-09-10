@@ -325,7 +325,7 @@ function renderDefaultTargets() {
 
     container.innerHTML = `
         <div class="info-box">
-            <strong>Known agent locations</strong> — check the ones you want to manage. Unchecked locations stay hidden from the dashboard.
+            <strong>Known agent locations:</strong> check the ones you want to manage. Unchecked locations stay hidden from the dashboard.
             <div class="default-targets-list">
                 ${state.defaultTargets.map(t => `
                     <label class="checkbox-row">

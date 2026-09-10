@@ -18,11 +18,11 @@ Devin currently discovers skills from repositories rather than a global user dir
 
 ## Features
 
-- **Central Skills Hub** — Manage everything from `~/.agents/skills/`.
-- **Agent Target Management** — Built-in targets for Cursor, Claude, Codex, and OpenCode; add custom targets dynamically.
-- **Safe Symlink Workflow** — Preview target directories, move existing skills into the hub, then create or remove symlinks with clear conflict handling. Undo a symlink later to restore the original directory.
-- **Project Skill Reviewer** — Scan any project for `.agents/skills/`, `.cursor/skills/`, `.claude/skills/`, `.codex/skills/`, and `.opencode/skills/`; review and import skills into the central hub.
-- **Web Admin UI** — Fully self-contained dashboard; no manual CLI steps needed after launching the server.
+- **Central Skills Hub:** Manage everything from `~/.agents/skills/`.
+- **Agent Target Management:** Built-in targets for Cursor, Claude, Codex, and OpenCode; add custom targets dynamically.
+- **Safe Symlink Workflow:** Preview target directories, move existing skills into the hub, then create or remove symlinks with clear conflict handling. Undo a symlink later to restore the original directory.
+- **Project Skill Reviewer:** Scan any project for `.agents/skills/`, `.cursor/skills/`, `.claude/skills/`, `.codex/skills/`, and `.opencode/skills/`; review and import skills into the central hub.
+- **Web Admin UI:** Fully self-contained dashboard; no manual CLI steps needed after launching the server.
 
 ## Quick Start
 
@@ -105,7 +105,7 @@ Creating symlinks on Windows typically requires **Developer Mode** or an elevate
 
 ## License
 
-Copyright &copy; 2026 BlueFate Labs. Agent Skills Manager is released under the **MIT License** — a permissive, free/open-source license. See [LICENSE](LICENSE) for the full text.
+Copyright &copy; 2026 BlueFate Labs. Agent Skills Manager is released under the **MIT License**, a permissive, free/open-source license. See [LICENSE](LICENSE) for the full text.
 
 ## Logo / Assets
 
