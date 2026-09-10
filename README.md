@@ -9,6 +9,7 @@ Different agents and editors expect skills in different places:
 - `~/.cursor/skills/`
 - `~/.claude/skills/`
 - `~/.codex/skills/`
+- `~/.devin/skills/`
 - `~/.config/opencode/skills/`
 
 This tool keeps all your skills in `~/.agents/skills/` and lets you safely preview, move, and symlink those other locations so every editor reads from the same source.
