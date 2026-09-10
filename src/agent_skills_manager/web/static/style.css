@@ -132,6 +132,17 @@ p {
     font-size: 0.875rem;
 }
 
+.update-link {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.update-link:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
 .tabs {
     display: flex;
     gap: 0.5rem;
@@ -466,10 +477,14 @@ textarea {
     border: 1px solid var(--border);
     border-radius: var(--radius);
     width: 90%;
-    max-width: 560px;
+    max-width: 760px;
     max-height: 85vh;
     overflow-y: auto;
     padding: var(--gap);
+}
+
+.project-reviewer {
+    display: none;
 }
 
 .modal-header {

@@ -25,7 +25,7 @@
             <img src="/static/logo.svg" alt="" class="app-logo" width="32" height="32">
         </a>
         <h1>{{ app_title }}</h1>
-        <span class="version">v{{ app_version }}</span>
+        <span class="version" data-current-version="{{ app_version }}">v{{ app_version }}</span>
         <nav class="header-links">
             <a href="/" class="btn small">Home</a>
             <button id="theme-toggle" class="theme-toggle" aria-label="Toggle light/dark mode">
@@ -35,22 +35,21 @@
     </header>
 
     <nav class="tabs" role="tablist">
-        <button class="tab active" data-tab="skills">Central Skills</button>
+        <button class="tab active" data-tab="skills">Skill Library</button>
         <button class="tab" data-tab="targets">Agent Targets</button>
-        <button class="tab" data-tab="projects">Project Reviewer</button>
     </nav>
 
     <main class="container">
         <section id="skills" class="panel active">
             <div class="panel-header">
-                <h2>Central Skills</h2>
+                <h2>Skill Library</h2>
                 <button id="btn-add-skill" class="btn primary" title="Create a new skill in the central hub">Add Skill</button>
             </div>
             <div class="info-box">
                 <strong>Add Skill</strong> creates a new skill folder and its <code>SKILL.md</code> metadata file in <code>~/.agents/skills/</code>. Changes here are reflected in every symlinked agent directory.
                 <strong>After adding or editing a skill, restart your agent/editor so it reloads its skill list.</strong>
             </div>
-            <div class="capability-grid" aria-label="Central Skills capabilities">
+            <div class="capability-grid" aria-label="Skill Library capabilities">
                 <article class="capability-card">
                     <h3>Add and maintain</h3>
                     <p>Create a skill with a name, description, and tags. Edit its metadata later or remove skills you no longer use.</p>
@@ -108,7 +107,7 @@
             <div id="targets-list" class="card-list targets-grid"></div>
         </section>
 
-        <section id="projects" class="panel">
+        <section id="projects" class="panel project-reviewer">
             <div class="panel-header">
                 <h2>Project Reviewer</h2>
             </div>

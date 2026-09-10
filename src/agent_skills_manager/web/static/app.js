@@ -58,6 +58,27 @@ qs('#theme-toggle').addEventListener('click', () => {
 // Restore saved theme on load
 applyTheme(localStorage.getItem('asm-theme') === 'light');
 
+async function checkForUpdate() {
+    const version = qs('.version');
+    if (!version) return;
+    try {
+        const update = await API.get('/api/updates/latest');
+        if (!update.available) return;
+        const link = document.createElement('a');
+        link.href = update.url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.className = 'update-link';
+        link.textContent = `Update available: ${update.version}`;
+        version.append(' ');
+        version.appendChild(link);
+    } catch (_) {
+        // The app remains fully local when GitHub is unavailable.
+    }
+}
+
+checkForUpdate();
+
 function showToast(message, type = 'success') {
     toast.textContent = message;
     toast.className = `toast ${type}`;
