@@ -8,7 +8,7 @@ from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, Query
-from fastapi.responses import HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.requests import Request
@@ -122,6 +122,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
     templates = Jinja2Templates(directory=templates_dir)
 
+    @app.get("/apple-touch-icon.png", include_in_schema=False)
+    @app.get("/apple-touch-icon-precomposed.png", include_in_schema=False)
+    async def apple_touch_icon() -> FileResponse:
+        return FileResponse(static_dir / "apple-touch-icon.png", media_type="image/png")
+
     @app.get("/", response_class=HTMLResponse)
     async def home(request: Request) -> HTMLResponse:
         return templates.TemplateResponse(
@@ -135,12 +140,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.get("/app", response_class=HTMLResponse)
     async def dashboard(request: Request) -> HTMLResponse:
+        hub_path = settings.skills_dir.expanduser().resolve()
+        default_hub_path = (Path.home() / ".agents" / "skills").resolve()
         return templates.TemplateResponse(
             request,
             "index.html",
             {
                 "app_title": settings.app_title,
                 "app_version": settings.app_version,
+                "hub_path": str(hub_path),
+                "hub_is_custom": hub_path != default_hub_path,
             },
         )
 

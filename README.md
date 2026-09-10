@@ -6,6 +6,7 @@ A small, open-source web application that helps you maintain **one canonical dir
 
 Different agents and editors expect skills in different places:
 
+- `~/.agents/skills/` (the global, canonical hub used by this app)
 - `~/.cursor/skills/`
 - `~/.claude/skills/`
 - `~/.codex/skills/`
@@ -13,13 +14,15 @@ Different agents and editors expect skills in different places:
 
 This tool keeps all your skills in `~/.agents/skills/` and lets you safely preview, move, and symlink those other locations so every editor reads from the same source.
 
+Devin currently discovers skills from repositories rather than a global user directory. Its recommended path is `<repository>/.agents/skills/<skill-name>/SKILL.md`; global and organization-level skills are not currently supported. See the [Devin Skills documentation](https://docs.devin.ai/product-guides/skills) for its complete list of supported repository paths.
+
 ## Features
 
-- **Central Skills Hub** — Manage everything from `~/.agents/skills/`.
-- **Agent Target Management** — Built-in targets for Cursor, Claude, Codex, and OpenCode; add custom targets dynamically.
-- **Safe Symlink Workflow** — Preview target directories, move existing skills into the hub, then create or remove symlinks with clear conflict handling. Undo a symlink later to restore the original directory.
-- **Project Skill Reviewer** — Scan any project for `.agents/skills/`, `.cursor/skills/`, `.claude/skills/`, `.codex/skills/`, and `.opencode/skills/`; review and import skills into the central hub.
-- **Web Admin UI** — Fully self-contained dashboard; no manual CLI steps needed after launching the server.
+- **Central Skills Hub:** Manage everything from `~/.agents/skills/`.
+- **Agent Target Management:** Built-in targets for Cursor, Claude, Codex, and OpenCode; add custom targets dynamically.
+- **Safe Symlink Workflow:** Preview target directories, move existing skills into the hub, then create or remove symlinks with clear conflict handling. Undo a symlink later to restore the original directory.
+- **Project Skill Reviewer:** Scan any project for `.agents/skills/`, `.cursor/skills/`, `.claude/skills/`, `.codex/skills/`, and `.opencode/skills/`; review and import skills into the central hub.
+- **Web Admin UI:** Fully self-contained dashboard; no manual CLI steps needed after launching the server.
 
 ## Quick Start
 
@@ -44,6 +47,29 @@ agent-skills-manager run
 ```
 
 Open <http://127.0.0.1:8000> for the home page, then click **Open Dashboard** or go directly to <http://127.0.0.1:8000/app> to manage skills and targets.
+
+### Update or Refresh the App
+
+If the app is already running, stop the server with `Ctrl+C`, start it again, and hard-refresh the dashboard in your browser (`Cmd+Shift+R` on macOS or `Ctrl+Shift+R` on Windows and Linux).
+
+For an editable installation from this repository, update the checkout and refresh the installation before restarting the server:
+
+```bash
+cd /path/to/skill-manager
+git switch main
+git pull
+.venv/bin/pip install -e ".[dev]"
+.venv/bin/agent-skills-manager run
+```
+
+When you are testing changes from another branch, switch to that branch instead of `main`. Editable installs usually pick up source and UI changes immediately, but restarting the server ensures the running process reloads them.
+
+For an installation from PyPI, upgrade the package and restart the app:
+
+```bash
+pip install --upgrade agent-skills-manager
+agent-skills-manager run
+```
 
 ### Custom Options
 
@@ -79,7 +105,7 @@ Creating symlinks on Windows typically requires **Developer Mode** or an elevate
 
 ## License
 
-Copyright &copy; 2026 BlueFate Labs. Agent Skills Manager is released under the **MIT License** — a permissive, free/open-source license. See [LICENSE](LICENSE) for the full text.
+Copyright &copy; 2026 BlueFate Labs. Agent Skills Manager is released under the **MIT License**, a permissive, free/open-source license. See [LICENSE](LICENSE) for the full text.
 
 ## Logo / Assets
 

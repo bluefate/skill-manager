@@ -28,6 +28,17 @@ def test_dashboard(client: TestClient) -> None:
     assert response.status_code == 200
     assert "Agent Skills Manager" in response.text
     assert "Central Skills" in response.text
+    assert "Central hub location" in response.text
+    assert "custom path" in response.text
+    assert "/hub" in response.text
+
+
+@pytest.mark.parametrize("path", ["/apple-touch-icon.png", "/apple-touch-icon-precomposed.png"])
+def test_apple_touch_icon(client: TestClient, path: str) -> None:
+    response = client.get(path)
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "image/png"
+    assert response.content.startswith(b"\x89PNG\r\n\x1a\n")
 
 
 def test_skills_crud(client: TestClient) -> None:

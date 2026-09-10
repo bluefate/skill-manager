@@ -6,6 +6,7 @@
     <title>{{ app_title }}</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <script>
         (function() {
             const saved = localStorage.getItem('asm-theme');
@@ -15,7 +16,7 @@
         })();
     </script>
     <style>
-        html.light-active body { background: #f8fafc; color: #0f172a; }
+        html.light-active body { background: #f5f7fb; color: #111827; }
     </style>
 </head>
 <body>
@@ -49,8 +50,22 @@
                 All skills live in <code>~/.agents/skills/</code>. Changes here are reflected in every symlinked agent directory.
                 <strong>After adding or editing a skill, restart your agent/editor so it reloads its skill list.</strong>
             </div>
+            <div class="capability-grid" aria-label="Central Skills capabilities">
+                <article class="capability-card">
+                    <h3>Add and maintain</h3>
+                    <p>Create a skill with a name, description, and tags. Edit its metadata later or remove skills you no longer use.</p>
+                </article>
+                <article class="capability-card">
+                    <h3>Find skills quickly</h3>
+                    <p>Filter the collection by name, description, or tag. Results update as you type.</p>
+                </article>
+                <article class="capability-card">
+                    <h3>Share one source</h3>
+                    <p>Skills in the central hub become available to every agent directory linked to it, avoiding duplicate copies.</p>
+                </article>
+            </div>
             <input type="text" id="skill-filter" placeholder="Filter by name or tag...">
-            <div id="skills-list" class="card-list"></div>
+            <div id="skills-list" class="card-list skills-grid"></div>
         </section>
 
         <section id="targets" class="panel">
@@ -58,11 +73,39 @@
                 <h2>Agent Targets</h2>
                 <button id="btn-add-target" class="btn primary">Add Target</button>
             </div>
+            <div class="hub-location">
+                <div class="hub-location-heading">
+                    <div>
+                        <span class="eyebrow">Central hub location</span>
+                        <code>{{ hub_path }}</code>
+                    </div>
+                    <span class="badge hub-badge">{{ "custom path" if hub_is_custom else "default path" }}</span>
+                </div>
+                <p>This is the source directory every symlinked agent target reads from. The default is created automatically; set <code>--skills-dir</code> only when you want to store the hub somewhere else.</p>
+            </div>
             <div class="info-box">
                 Symlink agent-specific skill directories to the central hub. Preview first to safely move any existing skills.
                 <strong>After creating or removing a symlink, restart that agent/editor.</strong>
             </div>
-            <div id="targets-list" class="card-list"></div>
+            <div class="capability-grid" aria-label="Agent Targets capabilities">
+                <article class="capability-card">
+                    <h3>Choose locations</h3>
+                    <p>Enable known agent paths or add a custom target for another editor or tool.</p>
+                </article>
+                <article class="capability-card">
+                    <h3>Understand status</h3>
+                    <p><strong>Missing</strong> has no directory yet. <strong>Directory</strong> is standalone. <strong>Symlink</strong> is connected to the hub.</p>
+                </article>
+                <article class="capability-card">
+                    <h3>Link safely</h3>
+                    <p><strong>Preview &amp; Symlink</strong> shows file moves and conflicts before making changes. Linked targets can later be removed or undone.</p>
+                </article>
+            </div>
+            <div id="targets-list-header" class="list-section-header">
+                <h3>Configured agent targets</h3>
+                <p><strong>Missing</strong> means the agent’s expected skills path does not exist yet. Use <strong>Preview &amp; Create Link</strong> to review the operation and create that path as a link to the central hub.</p>
+            </div>
+            <div id="targets-list" class="card-list targets-grid"></div>
         </section>
 
         <section id="projects" class="panel">
@@ -72,6 +115,20 @@
             <div class="info-box">
                 Scan a project for its local <code>.agents/skills/</code>, <code>.cursor/skills/</code>, <code>.claude/skills/</code>, <code>.codex/skills/</code>, and <code>.opencode/skills/</code> directories.
                 <strong>After importing skills into the hub, restart any agents/editors that should use them.</strong>
+            </div>
+            <div class="capability-grid" aria-label="Project Reviewer capabilities">
+                <article class="capability-card">
+                    <h3>Scan a project</h3>
+                    <p>Enter an absolute project path to discover supported agent skill directories and their contents.</p>
+                </article>
+                <article class="capability-card">
+                    <h3>Review selections</h3>
+                    <p>Inspect skills by agent directory and select only the ones you want to bring into the central hub.</p>
+                </article>
+                <article class="capability-card">
+                    <h3>Import safely</h3>
+                    <p>Copy selected skills into the hub. Name conflicts are preserved by assigning the imported skill a unique name.</p>
+                </article>
             </div>
             <div class="form-row">
                 <input type="text" id="project-path" placeholder="/path/to/project" style="flex:1">

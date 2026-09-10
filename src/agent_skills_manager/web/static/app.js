@@ -262,6 +262,14 @@ function renderTargets() {
         return;
     }
 
+    const statusDescriptions = {
+        missing: 'This agent skills directory has not been created yet.',
+        directory: 'An independent skills directory exists at this location.',
+        symlink_ok: 'This location is linked to the central hub.',
+        symlink_broken: 'This symlink points to a location that is no longer available.',
+        file: 'A file exists where the agent skills directory should be.',
+    };
+
     list.innerHTML = state.targets.map(t => {
         const stateClass = t.state.replace('_', '-');
         return `
@@ -272,9 +280,10 @@ function renderTargets() {
             </div>
             <div class="card-meta">${escapeHtml(t.path)}</div>
             ${t.resolved_path ? `<div class="card-meta">-> ${escapeHtml(t.resolved_path)}</div>` : ''}
+            <p class="target-status">${escapeHtml(statusDescriptions[t.state] || '')}</p>
             <p>${t.skills.length} skill(s) visible here</p>
             <div class="actions">
-                ${t.state === 'directory' ? `<button class="btn small primary" data-preview="${escapeHtml(t.id)}">Preview & Symlink</button>` : ''}
+                ${t.state === 'directory' || t.state === 'missing' ? `<button class="btn small primary" data-preview="${escapeHtml(t.id)}">${t.state === 'missing' ? 'Preview & Create Link' : 'Preview & Symlink'}</button>` : ''}
                 ${t.state === 'symlink_ok' ? `<button class="btn small danger" data-remove="${escapeHtml(t.id)}">Remove Symlink</button>` : ''}
                 ${t.can_undo ? `<button class="btn small warning" data-undo="${escapeHtml(t.id)}">Undo Symlink</button>` : ''}
                 ${!isDefaultTarget(t) ? `<button class="btn small danger" data-delete-target="${escapeHtml(t.id)}">Delete Target</button>` : ''}
@@ -306,7 +315,7 @@ function renderDefaultTargets() {
         container = document.createElement('div');
         container.id = 'default-targets';
         container.className = 'default-targets';
-        qs('#targets').insertBefore(container, qs('#targets-list'));
+        qs('#targets').insertBefore(container, qs('#targets-list-header'));
     }
 
     if (!state.defaultTargets.length) {
@@ -316,12 +325,13 @@ function renderDefaultTargets() {
 
     container.innerHTML = `
         <div class="info-box">
-            <strong>Known agent locations</strong> — check the ones you want to manage. Unchecked locations stay hidden from the dashboard.
+            <strong>Known agent locations:</strong> check the ones you want to manage. Unchecked locations stay hidden from the dashboard.
             <div class="default-targets-list">
                 ${state.defaultTargets.map(t => `
                     <label class="checkbox-row">
                         <input type="checkbox" value="${escapeHtml(t.id)}" ${state.enabledDefaults.includes(t.id) ? 'checked' : ''}>
-                        <span>${escapeHtml(t.name)} <code>${escapeHtml(t.path)}</code></span>
+                        <span class="default-target-name">${escapeHtml(t.name)}</span>
+                        <code class="default-target-path">${escapeHtml(t.path)}</code>
                     </label>
                 `).join('')}
             </div>
@@ -344,12 +354,12 @@ async function previewTarget(id) {
         ).join('');
         const conflicts = preview.conflicts.map(c => `<li class="conflict">${escapeHtml(c)}</li>`).join('');
 
-        const operations = preview.operations.map(o => `<li><code>${escapeHtml(o)}</code></li>`).join('');
+        const operations = preview.operations.map(escapeHtml).join('\n');
 
         const body = document.createElement('div');
         body.innerHTML = `
             <p>${escapeHtml(preview.message)}</p>
-            ${operations ? `<h4>Execution plan</h4><ul class="preview-list">${operations}</ul>` : ''}
+            ${operations ? `<h4>Execution plan</h4><pre class="execution-plan"><code>${operations}</code></pre>` : ''}
             ${listItems ? `<h4>Existing skills (${preview.existing_skills.length})</h4><ul class="preview-list">${listItems}</ul>` : ''}
             ${conflicts ? `<h4>Conflicts</h4><ul class="preview-list">${conflicts}</ul>` : ''}
             <div class="checkbox-row">
